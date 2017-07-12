@@ -105,7 +105,7 @@ public class WorkloadTriggerHandler {
         system.debug('Work items query is : ' + soql);
 
         //Id batchId;
-        BulkWorkItemUpdateOwnerBatch batch = new BulkWorkItemUpdateOwnerBatch(soql,workLoadIds);
+        BulkWorkItemUpdateBatch batch = new BulkWorkItemUpdateBatch(soql,workLoadIds);
         integer batchSize = SystemSettings.getIntegerValue('batchSize.workitemOwnerUpdate');
         Id batchId = Database.executeBatch(batch, batchSize);
     }
