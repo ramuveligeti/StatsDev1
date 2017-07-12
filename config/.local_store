@@ -5314,7 +5314,7 @@
         "createdById": "00517000000pOVkAAM",
         "namespacePrefix": null,
         "lastModifiedById": "00517000000cxBPAAY",
-        "lastModifiedDate": "2017-07-12T21:36:31.000+0000",
+        "lastModifiedDate": "2017-07-12T21:55:21.000+0000",
         "fullName": "BulkWorkItemUpdateBatch",
         "fileName": "unpackaged/classes/BulkWorkItemUpdateBatch.cls",
         "createdByName": "Eric Leung",
