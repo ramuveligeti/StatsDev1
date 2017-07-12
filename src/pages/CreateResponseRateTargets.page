@@ -1,0 +1,25 @@
+<apex:page standardController="Response_Rate__c" extensions="CreateResponseRateTargets">
+    <c:LoadingWindow />
+    <apex:outputPanel rendered="false">
+        {!Response_Rate__c.Grouping__c}
+        {!Response_Rate__c.Active__c}
+        {!Response_Rate__c.Grouping__r.Active__c}
+        {!Response_Rate__c.Collection__r.Collection_Code__c}
+    </apex:outputPanel>
+    
+    <apex:form >
+        <apex:pageBlock id="GroupingsForm" title="Create Response Rate Targets">
+            <!--apex:pageMessage summary="If 'All' is selected then other values will be ignored (except Target Percentage). You can select up to 2 'All' values." severity="Info" strength="2" rendered="{!displayPage}"></apex:pageMessage-->
+            <apex:pageMessages id="ShowMsg"></apex:pageMessages>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" reRender="GroupingsForm"  rendered="{!displayPage}" value="Save" status="loadStatus"/>
+                <apex:commandButton action="{!save}" reRender="GroupingsForm"  rendered="{!displayPage}" value="Save & New" status="loadStatus">
+                    <apex:param name="redirect" assignTo="{!saveAndNew}" value="true"/>
+                </apex:commandButton>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            <apex:dynamicComponent componentValue="{!DynamicSection}" rendered="{!displayPage}" id="dc">
+            </apex:dynamicComponent>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,78 @@
+<apex:page standardcontroller="Work_Item__c" extensions="SocialHouseholdHistoryViewExCon">
+    <apex:outputpanel rendered="false">
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.LBU__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.Assigned__c}
+        {!Work_Item__c.Response__c}
+        {!Work_Item__c.Contact__r.Assigned__c}
+        {!Work_Item__c.Contact__r.Notes__c}
+        {!Work_Item__c.Response__r.Contact__c}
+        {!Work_Item__c.Approval_Status__c}
+        {!Work_Item__c.Name}
+        {!Work_Item__c.Status__c}
+        {!Work_Item__c.Response__r.Rotation__c}
+        {!Work_Item__c.Work_Item_Type__c}
+        {!Work_Item__c.Response__r.Collection_Instance__r.Extension_Cut_off_Date__c}
+        {!Work_Item__c.Response_Extension_Date__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__c}
+        {!Work_Item__c.Collection_Instance__c}
+        {!Work_Item__c.Response__r.Wave__c}
+        {!Work_Item__c.Contact__c}
+        {!Work_Item__c.Unit_Id__c}
+        {!Work_Item__c.Collection__c}
+    </apex:outputpanel>
+    <apex:pageblock id="socialBlock">
+        <apex:pageblocksection title="Household Details" collapsible="true" showheader="true" columns="1">
+            <apex:pageblocktable id="hhldDet" value="{!householdMap}" var="dr">
+                <apex:column headervalue="Response Number">
+                    <apex:outputlink value="/{!dr.Id}">{!dr.Name}</apex:outputlink>
+                </apex:column>
+                <apex:column headervalue="Contact">
+                    <apex:outputfield value="{!dr.Contact__r.Name}" />
+                </apex:column>
+                <apex:column value="{!dr.Rotation__c}" />
+                <apex:column value="{!dr.Status__c}" />
+                <apex:column value="{!dr.Response_Status_Reason__c}" />
+                <apex:column headervalue="Last Modified Date">
+                    <apex:outputfield value="{!respHistory[dr.Id].CreatedDate}" />
+                </apex:column>
+                <apex:column headervalue="Last Modified By">
+                    <apex:outputfield value="{!respHistory[dr.Id].CreatedById}" />
+                </apex:column>
+                <apex:column id="indCol" headervalue="Individual Details" breakbefore="true" colspan="11">
+                    <apex:pageblocksection id="indDet" title="Individual Details" showheader="true" collapsible="true" columns="1">
+                        <script> twistSection(document.getElementById('img_{!$Component.indDet}'));  </script>
+                        <apex:pageblocktable value="{!householdMap[dr]}" var="ir" border="20px">
+                            <apex:column headervalue="Response Number">
+                                <apex:outputlink value="/{!ir.Id}">{!ir.Name}</apex:outputlink>
+                            </apex:column>
+                            <apex:column headervalue="Contact">
+                                <apex:outputfield value="{!ir.Contact__r.Name}" />
+                            </apex:column>
+                            <apex:column headervalue="Phone">
+                                <apex:outputfield value="{!ir.Contact__r.Phone}" />
+                            </apex:column>
+                            <apex:column headervalue="Email">
+                                <apex:outputfield value="{!ir.Contact__r.Email}" />
+                            </apex:column>
+                            <apex:column headervalue="Gender">
+                                <apex:outputfield value="{!ir.Contact__r.Gender__c}" />
+                            </apex:column>
+                            <apex:column headervalue="DOB">
+                                <apex:outputfield value="{!ir.Contact__r.BirthDate}" />
+                            </apex:column>
+                            <apex:column value="{!ir.Rotation__c}" />
+                            <apex:column value="{!ir.Status__c}" />
+                            <apex:column value="{!ir.Response_Status_Reason__c}" />
+                            <apex:column headervalue="Last Modified Date">
+                                <apex:outputfield value="{!respHistory[ir.Id].CreatedDate}" />
+                            </apex:column>
+                            <apex:column headervalue="Last Modified By">
+                                <apex:outputfield value="{!respHistory[ir.Id].CreatedById}" />
+                            </apex:column>
+                        </apex:pageblocktable>
+                    </apex:pageblocksection>
+                </apex:column>
+            </apex:pageblocktable>
+        </apex:pageblocksection>
+    </apex:pageblock>
+</apex:page>

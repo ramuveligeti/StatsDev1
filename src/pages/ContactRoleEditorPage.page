@@ -1,0 +1,49 @@
+<apex:page standardController="Contact_Role__c" extensions="ContactRoleEditorController" >
+
+
+<apex:pageMessages />
+
+<apex:form >
+
+<apex:pageBlock title="Setup Contact Role Units">
+	<apex:pageBlockButtons location="top">
+		<apex:commandButton value="Save" action="{!save}" rendered="{! NOT(processed) && activeCR }" />
+		<apex:commandButton value="{! if(processed, 'Finish', 'Cancel')}" action="{!cancel}" />
+	</apex:pageBlockButtons>
+
+	<apex:pageBlockSection title="Contact Role Details">
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Collection Name"/>
+			<apex:outputField value="{!Contact_Role__c.Collection__c}"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Collection Unit"/>
+			<apex:outputField value="{!Contact_Role__c.Unit_of_Interest_ID__c}"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Contact Name"/>
+			<apex:outputField value="{!Contact_Role__c.Contact__c}"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Status"/>
+			<apex:outputField value="{!Contact_Role__c.Status__c}"/>
+		</apex:pageBlockSectionItem>
+	</apex:pageBlockSection>
+	<br/>
+	<apex:outputPanel rendered="{! activeCR}">
+	<apex:outputText >
+	<p>Select the survey units that are related to this contact role, and click save.</p>
+	</apex:outputText>
+	<apex:pageBlockTable title="Survey units" value="{!displayUnits}" var="u">
+		<apex:column headerValue="Selected"><apex:inputCheckbox value="{!u.selected}"/></apex:column>
+		<apex:column headerValue="Unit Name"><apex:outputText value="{!u.record.Name}"/></apex:column>
+		<apex:column headerValue="Unit Frame ID"><apex:outputText value="{!u.record.Unit_of_Interest_ID__c}"/></apex:column>
+		<apex:column headerValue="Unit Address"><apex:outputText value="{!u.record.Address__c}"/></apex:column>
+	</apex:pageBlockTable>
+	</apex:outputPanel>
+
+</apex:pageBlock>
+
+</apex:form>
+
+</apex:page>

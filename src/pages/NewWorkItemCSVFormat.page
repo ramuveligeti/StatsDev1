@@ -1,0 +1,248 @@
+<!--
+/**
+* @description
+*	This page allows the user to create new Work_Item_CSV_Format object.
+* 	Work_Item_CSV_Formats are used when generating a Work_Item for a collection instance.
+*	Work_Item_CSV_Format has fields name Column_Header_X where X is an integer greater then 0.
+*	The column fields are used when rendering CSV, they give the header text, match against custom settings for the sObject
+*	data from a Work_Item and the order they appear in e.g. Column_Header_1 will come before Column_Header_2 and so on.
+* @author Joseph Newby
+* @date 07.Sep.2015
+***********************************
+* @amendment ECP-3520  Caterina Cuccurullo
+* @date 24.aug.2016 
+* To allow for additional fields to be extracted to CSV, added 10 new fields Column_Header_21 to Column_Header_30. 
+***********************************
+* @amendment ECP-3767Bug - Story ECP-3556 Caterina Cuccurullo
+* @date 06.Dec.2016 
+* To allow for additional fields to be extracted to CSV, added 20 new fields Column_Header_31 to Column_Header_50. 
+*/
+-->
+
+<apex:page standardController="Work_Item_CSV_Format__c" extensions="NewWorkItemCSVFormatCX">
+    <style>
+        .format {
+        float: left;
+        margin-right: 43px;
+        }
+
+        th {
+        padding-bottom: 10px;
+        }
+
+        th input {
+        width: 100%;
+        }
+
+        td {
+        padding-bottom: 5px;
+        }
+
+        tr > :first-child {
+        padding-right: 20px;
+        }
+        .format-container:after {
+        content:"";
+        display:block;
+        clear:both;
+        }
+    </style>
+    <apex:outputPanel layout="none" rendered="false">
+        {!Work_Item_CSV_Format__c.Collection__c}
+        {!Work_Item_CSV_Format__c.Collection__r.recordtype.name}
+        {!Work_Item_CSV_Format__c.Grouping__c}
+        {!Work_Item_CSV_Format__c.Contextual_Mappings__c}
+        {!Work_Item_CSV_Format__c.Name}
+        {!Work_Item_CSV_Format__c.Column_Header_1__c}
+        {!Work_Item_CSV_Format__c.Column_Header_2__c}
+        {!Work_Item_CSV_Format__c.Column_Header_3__c}
+        {!Work_Item_CSV_Format__c.Column_Header_4__c}
+        {!Work_Item_CSV_Format__c.Column_Header_5__c}
+        {!Work_Item_CSV_Format__c.Column_Header_6__c}
+        {!Work_Item_CSV_Format__c.Column_Header_7__c}
+        {!Work_Item_CSV_Format__c.Column_Header_8__c}
+        {!Work_Item_CSV_Format__c.Column_Header_9__c}
+        {!Work_Item_CSV_Format__c.Column_Header_10__c}
+        {!Work_Item_CSV_Format__c.Column_Header_11__c}
+        {!Work_Item_CSV_Format__c.Column_Header_12__c}
+        {!Work_Item_CSV_Format__c.Column_Header_13__c}
+        {!Work_Item_CSV_Format__c.Column_Header_14__c}
+        {!Work_Item_CSV_Format__c.Column_Header_15__c}
+        {!Work_Item_CSV_Format__c.Column_Header_16__c}
+        {!Work_Item_CSV_Format__c.Column_Header_17__c}
+        {!Work_Item_CSV_Format__c.Column_Header_18__c}
+        {!Work_Item_CSV_Format__c.Column_Header_19__c}
+        {!Work_Item_CSV_Format__c.Column_Header_20__c}
+        {!Work_Item_CSV_Format__c.Column_Header_21__c}
+        {!Work_Item_CSV_Format__c.Column_Header_22__c}
+        {!Work_Item_CSV_Format__c.Column_Header_23__c}
+        {!Work_Item_CSV_Format__c.Column_Header_24__c}
+        {!Work_Item_CSV_Format__c.Column_Header_25__c}
+        {!Work_Item_CSV_Format__c.Column_Header_26__c}
+        {!Work_Item_CSV_Format__c.Column_Header_27__c}
+        {!Work_Item_CSV_Format__c.Column_Header_28__c}
+        {!Work_Item_CSV_Format__c.Column_Header_29__c}
+        {!Work_Item_CSV_Format__c.Column_Header_30__c}
+        {!Work_Item_CSV_Format__c.Column_Header_31__c}
+        {!Work_Item_CSV_Format__c.Column_Header_32__c}
+        {!Work_Item_CSV_Format__c.Column_Header_33__c}
+        {!Work_Item_CSV_Format__c.Column_Header_34__c}
+        {!Work_Item_CSV_Format__c.Column_Header_35__c}
+        {!Work_Item_CSV_Format__c.Column_Header_36__c}
+        {!Work_Item_CSV_Format__c.Column_Header_37__c}
+        {!Work_Item_CSV_Format__c.Column_Header_38__c}
+        {!Work_Item_CSV_Format__c.Column_Header_39__c}
+        {!Work_Item_CSV_Format__c.Column_Header_30__c}
+        {!Work_Item_CSV_Format__c.Column_Header_31__c}
+        {!Work_Item_CSV_Format__c.Column_Header_32__c}
+        {!Work_Item_CSV_Format__c.Column_Header_33__c}
+        {!Work_Item_CSV_Format__c.Column_Header_34__c}
+        {!Work_Item_CSV_Format__c.Column_Header_35__c}
+        {!Work_Item_CSV_Format__c.Column_Header_36__c}
+        {!Work_Item_CSV_Format__c.Column_Header_37__c}
+        {!Work_Item_CSV_Format__c.Column_Header_38__c}
+        {!Work_Item_CSV_Format__c.Column_Header_39__c}
+        {!Work_Item_CSV_Format__c.Column_Header_40__c}
+        {!Work_Item_CSV_Format__c.Column_Header_41__c}
+        {!Work_Item_CSV_Format__c.Column_Header_42__c}
+        {!Work_Item_CSV_Format__c.Column_Header_43__c}
+        {!Work_Item_CSV_Format__c.Column_Header_44__c}
+        {!Work_Item_CSV_Format__c.Column_Header_45__c}
+        {!Work_Item_CSV_Format__c.Column_Header_46__c}
+        {!Work_Item_CSV_Format__c.Column_Header_47__c}
+        {!Work_Item_CSV_Format__c.Column_Header_48__c}
+        {!Work_Item_CSV_Format__c.Column_Header_49__c}
+        {!Work_Item_CSV_Format__c.Column_Header_50__c}
+        {!Work_Item_CSV_Format__c.Order_By_1__c}
+        {!Work_Item_CSV_Format__c.Order_By_1_Sort__c}
+        {!Work_Item_CSV_Format__c.Order_By_2__c}
+        {!Work_Item_CSV_Format__c.Order_By_2_Sort__c}
+        {!Work_Item_CSV_Format__c.Order_By_3__c}
+        {!Work_Item_CSV_Format__c.Order_By_3_Sort__c}
+        {!Work_Item_CSV_Format__c.Order_By_4__c}
+        {!Work_Item_CSV_Format__c.Order_By_4_Sort__c}
+        {!Work_Item_CSV_Format__c.Order_By_5__c}
+        {!Work_Item_CSV_Format__c.Order_By_5_Sort__c}
+    </apex:outputPanel>
+    <apex:form >
+        <apex:pageBlock title="Work Item CSV Format" >
+            <apex:pageMessages ></apex:pageMessages>
+
+            <div class="format-container">
+                <table class="format">
+                    <thead>
+                        <tr>
+                            <th>CSV Name</th>
+                            <th>
+                                <apex:inputField value="{!csvFormat.name}"/>
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th>Collection</th>
+                            <th>
+                                <apex:inputField value="{!csvFormat.Collection__c}">
+                                    <apex:actionSupport event="onchange" action="{!collectionSelected}" />
+                                </apex:inputField>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <apex:repeat value="{!columns}" var="column">
+                            <tr>
+                                <td>{!column.label}</td>
+                                <td>
+                                    <apex:selectList value="{!column.value}" multiselect="false" size="1">
+                                        <apex:selectOptions value="{!workItemFields}"/>
+                                    </apex:selectList>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+
+                <table class="format">
+                    <thead>
+                        <tr>
+                            <th colspan="3">Column Sorting</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>1st</td>
+
+                            <td>
+                                <apex:selectList value="{!csvFormat.Order_By_1__c}" multiselect="false" size="1">
+                                    <apex:selectOptions value="{!workItemFields}"/>
+                                </apex:selectList>
+                            </td>
+
+                            <td>
+                                <apex:inputField value="{!csvFormat.Order_By_1_Sort__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2nd</td>
+
+                            <td>
+                                <apex:selectList value="{!csvFormat.Order_By_2__c}" multiselect="false" size="1">
+                                    <apex:selectOptions value="{!workItemFields}"/>
+                                </apex:selectList>
+                            </td>
+
+                            <td>
+                                <apex:inputField value="{!csvFormat.Order_By_2_Sort__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3rd</td>
+
+                            <td>
+                                <apex:selectList value="{!csvFormat.Order_By_3__c}" multiselect="false" size="1">
+                                    <apex:selectOptions value="{!workItemFields}"/>
+                                </apex:selectList>
+                            </td>
+
+                            <td>
+                                <apex:inputField value="{!csvFormat.Order_By_3_Sort__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4th</td>
+
+                            <td>
+                                <apex:selectList value="{!csvFormat.Order_By_4__c}" multiselect="false" size="1">
+                                    <apex:selectOptions value="{!workItemFields}"/>
+                                </apex:selectList>
+                            </td>
+
+                            <td>
+                                <apex:inputField value="{!csvFormat.Order_By_4_Sort__c}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5th</td>
+
+                            <td>
+                                <apex:selectList value="{!csvFormat.Order_By_5__c}" multiselect="false" size="1">
+                                    <apex:selectOptions value="{!workItemFields}"/>
+                                </apex:selectList>
+                            </td>
+
+                            <td>
+                                <apex:inputField value="{!csvFormat.Order_By_5_Sort__c}" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveCSVFormat}" value="Save CSV Format"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

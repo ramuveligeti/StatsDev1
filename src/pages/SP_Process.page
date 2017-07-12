@@ -1,0 +1,6 @@
+<apex:page standardController="Opportunity">
+    <c:SP_Process labels="['Prospecting','Qualification','Needs Analysis','Value Proposition','Proposal','Negotiation','Won']"
+        shortlabels="['P','Q','NA','VP','PR','NE','WO']" 
+        selected="{!Opportunity.StageName}"
+    />
+</apex:page>

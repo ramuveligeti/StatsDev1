@@ -1,0 +1,42 @@
+<apex:page showHeader="true" sidebar="true" standardController="Response__c" extensions="ManageContactController">
+	<apex:form >
+		<apex:pageBlock >
+			<apex:pageMessages id="messages" />
+			<apex:pageBlockButtons >
+	            <apex:commandButton action="{!doCancel}" value="Cancel" rendered="{!showCancelButton}" immediate="true" html-formnovalidate="formnovalidate" />
+	            <apex:commandButton action="{!doSave}" value="Save" rendered="{!showSaveButton}"/>
+	            <apex:commandButton action="{!doReset}" value="Create New" rendered="{!showCancelButton}" immediate="true" html-formnovalidate="formnovalidate" />
+                <apex:commandbutton action="{!doRemoveContact}" value="Remove Contact" rendered="{!showRemoveContactButton}" immediate="true" onclick="if(!confirm('Are you sure about removing the contact from the response?')){return false;}" />
+	        </apex:pageBlockButtons>
+
+	        <apex:pageBlockSection columns="1">
+	        	<apex:outputField value="{!response.Unit_of_Interest__r.Unit_of_Interest_ID__c}" />
+	        	<apex:outputField value="{!response.Unit_of_Interest__r.Unit_Name__c}" />
+	        	<apex:outputField value="{!response.Collection_Instance__r.Collection__r.Name}" />
+	        	<apex:outputField value="{!response.Collection_Instance__r.Collection__r.Collection_Code__c}" />
+
+	        	<apex:pageBlockSectionItem >
+	        		<apex:outputLabel value="Contact Lookup" />
+	        		<apex:actionRegion >
+			        	<apex:inputField value="{!contactRole.Contact__c}">
+				        	<apex:actionSupport event="onchange" action="{!findContact}" reRender="messages,contactDetails"/>
+			            </apex:inputField>
+		        	</apex:actionRegion>
+	        	</apex:pageBlockSectionItem>
+		    </apex:pageBlockSection>
+	        	
+
+	        <apex:pageBlockSection title="Contact Details" columns="2" id="contactDetails">
+	        	<apex:inputField value="{!contact.FirstName}" />			<apex:inputField value="{!contactRole.Role__c}" required="true" />
+	        	<apex:inputField value="{!contact.LastName}" />				<apex:inputField value="{!contactRole.Care_of__c}" />
+	        	<apex:inputField value="{!contact.Company_Name__c}" />		<apex:inputField value="{!contactRole.Primary_Contact__c}" />
+	        	<apex:inputField value="{!contact.Email}" />				<br />
+	        	<apex:inputField value="{!contact.Phone}" />				<apex:inputField value="{!contact.Street_Road_PO_Box__c}" />
+	        	<apex:inputField value="{!contact.Main_Phone_Ext__c}" /> 	<apex:inputField value="{!contact.Building_Level_Unit__c}" />
+	        	<apex:inputField value="{!contact.HomePhone}" /> 			<apex:inputField value="{!contact.Suburb_Rural_Delivery__c}" />
+	        	<apex:inputField value="{!contact.Alt_Phone_Ext__c}" />		<apex:inputField value="{!contact.Town_or_City__c}" />
+	        	<apex:inputField value="{!contact.MobilePhone}" /> 			<apex:inputField value="{!contact.Country__c}" />
+	        </apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

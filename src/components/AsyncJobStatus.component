@@ -1,0 +1,26 @@
+<apex:component controller="AsyncJobStatus" selfClosing="true">
+    <apex:attribute name="AsyncJobId" type="String" description="Job Id" assignTo="{!jobId}"/>
+    <apex:attribute name="RedirectId" type="String" description="Record Id" assignTo="{!recordId}"/>
+    <apex:form id="AsyncForm">
+        <apex:pageBlock title="Batch job status">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!finish}" value="Finish" rendered="{!(recordId != NULL)}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="asyncSection">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Job Status</apex:outputLabel>
+                    <apex:outputText id="status" value="{!status}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Progress</apex:outputLabel>
+                    <apex:outputText id="progress" value="{!completionProgress}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!errorDetails !=NULL}" id="error">
+                    <apex:outputLabel >Error Details</apex:outputLabel>
+                    <apex:outputText value="{!errorDetails}"/>
+                </apex:pageBlockSectionItem>
+                <apex:actionPoller rendered="{!renderPoller}" action="{!progress}" interval="5" reRender="status,progress,asyncSection" />    
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:component>

@@ -1,0 +1,18 @@
+<apex:page standardcontroller="Work_Item__c" extensions="WorkItemsGroupedByExCon">
+    <apex:outputpanel rendered="false">
+        {!Work_Item__c.Contact__c}
+        {!Work_Item__c.Unit__c}
+    </apex:outputpanel>
+    <apex:pagemessage summary="No Outstanding Work Items for Collection Unit Available" severity="Info" strength="1" rendered="{! !display1}" />
+    <apex:pageblock rendered="{!display1}" title="Outstanding Work Items for Collection Unit">
+        <apex:pageblocktable value="{!workItemsRelatedToCollectionUnit}" var="wi">
+            <apex:column headervalue="Work Item Number">
+                <apex:outputlink value="{!wi.Id}">{!wi.Name}</apex:outputlink>
+            </apex:column>
+            <apex:column value="{!wi.Work_Item_Type__c}" />
+            <apex:column value="{!wi.Collection_Instance_Name__c}" />
+            <apex:column value="{!wi.Response__c}" />
+            <apex:column value="{!wi.Unit__c}" />
+        </apex:pageblocktable>
+    </apex:pageblock>
+</apex:page>

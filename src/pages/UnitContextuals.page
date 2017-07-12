@@ -1,0 +1,86 @@
+<apex:page standardController="Response__c">
+    <apex:pageBlock >
+        <apex:pageBlockSection >
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_1_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_1_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_1__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_2_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_2_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_2__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_3_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_3_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_3__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_4_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_4_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_4__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_5_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_5_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_5__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_6_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_6_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_6__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_7_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_7_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_7__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_8_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_8_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_8__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_9_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_9_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_9__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_10_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_10_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_10__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_11_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_11_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_11__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_12_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_12_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_12__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_13_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_13_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_13__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_14_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_14_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_14__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_15_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_15_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_15__c}"/>
+            </apex:pageBlockSectionItem>
+            <!--apex:pageBlockSectionItem rendered="{!Response__c.CO_16_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_16_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_16__c}"/>
+            </!--apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_17_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_17_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_17__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_18_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_18_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_18__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_19_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_19_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_19__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!Response__c.CO_20_Label__c!= NULL}">
+                <apex:outputLabel >{!Response__c.CO_20_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.CO_20__c}"/>
+            </apex:pageBlockSectionItem-->
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>

@@ -1,0 +1,174 @@
+<apex:page standardcontroller="Work_Item__c" extensions="InteractionLogExCon">
+    <apex:includescript value="/support/console/25.0/integration.js" />
+    <apex:includescript value="{!$Resource.jqueryLatest}" />
+    <div id="loader" class="loader1" style="display:block;"></div>
+    <div id="overlay" class="overlay1" style="display:block;"></div>
+    <c:LoadingWindow />
+    <apex:outputpanel rendered="false">
+        {!Work_Item__c.Response__r.Collection_Instance__r.Extension_Cut_off_Date__c}
+        {!Work_Item__c.Response__r.Extension_Date__c}
+        {!Work_Item__c.Response_Extension_Date__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.LBU__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.Assigned__c}
+        {!Work_Item__c.Response__c}
+        {!Work_Item__c.Contact__r.Assigned__c}
+        {!Work_Item__c.Contact__r.Notes__c}
+        {!Work_Item__c.Response__r.Contact__c}
+        {!Work_Item__c.Approval_Status__c}
+        {!Work_Item__c.Name}
+        {!Work_Item__c.Contact__c}
+        {!Work_Item__c.Unit__c}
+    </apex:outputpanel>
+    <!--c:InteractionLog workitemobj="{!Work_Item__c}"
+                      includeparentwi="true"
+                      columnstodisplay="2"
+                      displaycancel="false"
+                      displayclear="true" /-->
+    <style>
+        .overlay1 {
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            opacity: 0.3;
+            -moz-opacity: 0.3;
+            width: 100%;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+            filter: alpha(opacity=30);
+            background: #000;
+            -khtml-opacity: 0.3;
+            z-index: 1000;
+        }
+
+        .loader1 {
+            background: url('/img/loading32.gif') scroll no-repeat 0 0;
+            width: 32px;
+            height: 32px;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            margin-top: -50px;
+            margin-left: -100px;
+            z-index: 999;
+        }
+
+        div.hidden {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript">
+        j$ = jQuery.noConflict();
+        var ext2,extLabel2,feedback2,feedbackLabel2;
+        j$(window).load(function() {
+            hidefields();
+            document.getElementById('loader').style.display = "none";
+            document.getElementById('overlay').style.display = "none";
+        });
+        function hidefields(){
+            j$('label[id*=extensionDateLabel2]').parent().hide();
+            j$('span[id*=extension2]').parent().hide();
+            ext2 = j$('span[id*=extension2]').closest('td').html();
+            extLabel2 = j$('label[id*=extensionDateLabel2]').closest('th').html();
+            j$('label[id*=feedbackLabel2]').parent().hide();
+            j$('span[id*=feedback2]').parent().hide();
+            feedbackLabel2 = j$('label[id*=feedbackLabel2]').closest('th').html();
+            feedback2 = j$('span[id*=feedback2]').closest('td').html();
+            j$('label[id*=escalateLabel]').parent().hide();
+            j$('input[id*=escalate]').parent().hide();
+        }
+        function subjectChange(){
+            if(j$('select[id$=subject]').val() == 'Grant Extension'){
+                j$('textarea[id$=description]').closest('td').next('th').html(extLabel2);
+                j$('textarea[id$=description]').closest('td').next().next('td').html(ext2);
+                j$('label[id*=extensionDateLabel2]').parent().show();
+                j$('span[id*=extension2]').parent().show();
+                j$('label[id*=feedbackLabel2]').parent().hide();
+                j$('span[id*=feedback2]').parent().hide();
+                j$('label[id*=escalateLabel]').parent().hide();
+                j$('input[id*=escalate]').parent().hide();
+            }else if(j$('select[id$=subject]').val() == 'Feedback'){
+                j$('textarea[id$=description]').closest('td').next('th').html(feedbackLabel2);
+                j$('textarea[id$=description]').closest('td').next().next('td').html(feedback2);
+                j$('label[id*=feedbackLabel2]').parent().show();
+                j$('span[id*=feedback2]').parent().show();
+                j$('label[id*=extensionDateLabel2]').parent().hide();
+                j$('span[id*=extension2]').parent().hide();
+                j$('label[id*=escalateLabel]').parent().show();
+                j$('input[id*=escalate]').parent().show();
+            }else{
+                hidefields();
+            }
+        }
+        function RefreshPrimaryTab(refresh){
+            if(refresh=='true'){
+                loadingWindow1();
+                sforce.console.getFocusedPrimaryTabId(showTabId);
+            }else{
+                hidefields();
+                subjectChange();
+            }
+        }
+
+        var showTabId = function showTabId(result){
+            var tabId = result.id;
+            console.log('tabId=='+tabId);
+            sforce.console.refreshPrimaryTabById(tabId,true,refreshSuccess);
+        };
+
+        var refreshSuccess = function refreshSuccess(result){
+            //Report whether refreshing the primary tab was successful
+            if (result.success == true){
+                //hideLoadingWindow();
+            }else{
+                alert('Primary did not refresh');
+            }
+        };
+
+        function loadingWindow1(){
+            document.getElementById('loader').style.display = "block";
+            document.getElementById('overlay').style.display = "block";
+        }
+    </script>
+    <apex:form >
+        <apex:pageblock title="Interaction Log" id="interactionLog">
+            <apex:pagemessages />
+            <apex:pageblockbuttons location="top">
+                <apex:commandbutton action="{!save}" value="Save & Refresh Work Item" rerender="interactionLog" status="loadStatus" oncomplete="RefreshPrimaryTab('{!refreshParentTab}');return false" />
+                <apex:commandbutton action="{!save}" value="Save Log" rerender="interactionLog" status="loadStatus" oncomplete="subjectChange();" />
+                <apex:commandbutton action="{!clear}" value="Clear Log" rerender="interactionLog" status="loadStatus" oncomplete="subjectChange();" />
+            </apex:pageblockbuttons>
+            <apex:pageblocksection columns="2">
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel >Contact</apex:outputlabel>
+                    <apex:inputfield value="{!workItem.Contact__c}" />
+                </apex:pageblocksectionitem>
+                <apex:inputfield value="{!ts.Subject__c}" onchange="subjectChange();" id="subject" />
+                <apex:inputtextarea value="{!ts.Description}" cols="50" rows="5" id="description" />
+                <apex:pageblocksectionitem id="extension2" html-class="hidden">
+                    <apex:outputlabel value="Extension Date" for="extensionDate2" id="extensionDateLabel2" />
+                    <apex:outputpanel >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!workItem.Response__r.Extension_Date__c}" id="extensionDate2" />
+                        </div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem id="feedback2" html-class="hidden">
+                    <apex:outputlabel value="Feedback Type" for="feedbackType2" id="feedbackLabel2" />
+                    <apex:outputpanel >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!ts.Feedback_Type__c}" id="feedbackType2" />
+                        </div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageBlockSectionItem />
+                <apex:pageblocksectionitem />
+                <apex:pageblocksectionitem id="escalate" html-class="hidden">
+                    <apex:outputlabel value="Escalate" id="escalateLabel" for="escalate"/>
+                    <apex:inputcheckbox value="{!ts.Escalated__c}" id="escalate" />
+                </apex:pageblocksectionitem>
+            </apex:pageblocksection>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

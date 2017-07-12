@@ -1,0 +1,91 @@
+<apex:page standardController="Collection_Instance__c" extensions="RolloverResponsesController" >
+    <apex:outputPanel rendered="false">
+        {!Collection_Instance__c.Planned_Start_Date__c}
+        {!Collection_Instance__c.RecordType.Name}
+        {!Collection_Instance__c.Collection__c}
+        {!Collection_Instance__c.Rollover_status__c}
+        {!Collection_Instance__c.Rollover_Error__c}
+        {!Collection_Instance__c.Current_Wave__c}
+        {!Collection_Instance__c.Collection_Number__c}
+    </apex:outputPanel>
+
+    <c:LoadingWindow /> 
+	
+	<apex:sectionHeader title="Collection Instance Rollover" subtitle="{!Collection_Instance__c.Name}"/>
+	<apex:messages style="color:red" /> 
+
+	<apex:form >
+		<apex:pageBlock title="Unable to start rollover" rendered="{!showFailedValidation}">
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Cancel" action="{!cancel}"/>
+				<apex:commandButton value="Change Wave Selection" action="{!changeWaveSelection}" rendered="{!validationMessages == MESSAGE_NO_RESPONSES_FOUND}"/>
+			</apex:pageBlockButtons>
+			<apex:outputText >{!validationMessages}</apex:outputText>		
+		</apex:pageBlock>
+
+		<apex:pageBlock title="Wave Rollover" rendered="{!showSelectWave}">
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Cancel" action="{!cancel}"/>
+			</apex:pageBlockButtons>
+			<apex:outputPanel ><p>Select the Wave you want to Rollover.</p><p/>
+			</apex:outputPanel>
+			<apex:selectList value="{!selectedWave}" multiselect="false" size="1">
+	                <apex:selectOptions value="{!waves}"/>
+	           		<apex:actionSupport event="onchange" action="{!onWaveChange}"/>
+	        </apex:selectList>
+		</apex:pageBlock>
+
+		<apex:pageBlock title="Start Rollover Process" rendered="{!showStartButton}">
+			<apex:outputPanel ><p>Starting the Collection Instance Rollover for wave {!selectedWave}, will clone {!numberOfResponsesToClone} responses from the previous Collection Instance.</p>
+							<p>The number of existing dwelling responses for the current Collection Instance is: {!numberOfExistingResponses}.</p>
+			</apex:outputPanel>
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Cancel" action="{!cancel}"/>
+				<apex:commandButton value="Change Wave Selection" action="{!changeWaveSelection}"/>
+				<apex:commandButton value="Start Rollover" action="{!startRollover}"/>
+			</apex:pageBlockButtons>
+		</apex:pageBlock>
+
+		<apex:actionPoller action="{!checkProgress}" rendered="{!showProcessing}" reRender="areaToRefresh" interval="5"/>			
+
+		<apex:outputPanel id="areaToRefresh">
+	
+			<apex:pageBlock title="Collection Instance rollover in progress..." rendered="{!showProcessing}" id="processing">
+				<apex:pageBlockButtons >
+					<apex:commandButton value="Back to Collection Instance" action="{!cancel}"/>
+				</apex:pageBlockButtons>
+				<apex:outputText >Processing. Please wait for results... <img src="/img/loading32.gif" height="16" width="16" /></apex:outputText>
+			</apex:pageBlock>
+		
+			<apex:pageBlock title="Complete" rendered="{!showComplete}" id="complete">
+				<apex:pageBlockButtons >
+					<apex:commandButton value="Back to Collection Instance" action="{!cancel}"/>
+					<apex:commandButton value="Retry" rendered="{!collectionInstanceStatus = 'Partial Error'}" action="{!startRollover}"/>
+				</apex:pageBlockButtons>
+				<apex:outputPanel layout="block"><p>Processing is complete.</p></apex:outputPanel>	
+				<apex:outputPanel style="color:green" rendered="{!collectionInstanceStatus = 'Completed'}"><p><apex:image value="/img/msg_icons/confirm32.gif" height="16" width="16"/>&nbsp; The Rollover completed successfully. Rollover Status: Completed.</p></apex:outputPanel>	
+				<apex:outputPanel style="color:red" rendered="{!collectionInstanceStatus = 'Partial Error'}"><p><apex:image value="/img/msg_icons/error32.gif" height="16" width="16"/>&nbsp; One or more errors occurred, not all responses were cloned. Rollover Status: Partial Error.</p></apex:outputPanel>	
+			</apex:pageBlock>
+					
+			<apex:pageBlock title="Progress" rendered="{!showResults}" id="results">
+				<apex:pageBlockTable value="{!result}" var="result">
+ 					<apex:column style="width:300px">
+ 						<apex:facet name="header">Created Responses</apex:facet>					
+						{!result.created}
+					</apex:column> 
+ 					<apex:column style="width:20px">
+ 						<apex:facet name="header">Pending Rollover</apex:facet>					
+						{!result.toBeCreated}
+					</apex:column> 
+					<apex:column >
+ 						<apex:facet name="header">Errors</apex:facet>					
+						{!result.errors}
+					</apex:column> 
+				</apex:pageBlockTable>
+				
+			</apex:pageBlock>
+		
+		</apex:outputPanel>
+		
+	</apex:form>
+</apex:page>

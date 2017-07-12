@@ -1,0 +1,25 @@
+<apex:page controller="AdminCustomSettingsPageController">
+<apex:form >
+
+<apex:pageBlock title="Administrative CustomSettings" id="details" mode="{ if(readonly, 'detail', 'edit')}">
+ <apex:messages />
+<apex:pageBlockButtons location="top">
+    <apex:commandbutton action="{!save}" value="Save" rendered="{! !readonly}" rerender="details" />
+    <apex:commandbutton action="{!cancel}" value="Cancel" rendered="{! !readonly}"/>
+    <apex:commandbutton action="{!edit}" value="Edit" rendered="{! readonly}"/>
+</apex:pageBlockButtons>
+<apex:pageBlockTable value="{! editableCustomSettings}" var="config" >
+    <apex:column headerValue="Configuration Name"  value="{!config.name}" />
+    <apex:column headerValue="Configuration Value" >
+        <apex:outputText value="{! config.value__c}" rendered="{! readonly}"/>
+        <apex:inputText size="100" value="{! config.value__c}" rendered="{! !readonly}"/>
+    </apex:column>
+    <apex:column headerValue="Description">
+        <apex:outputText value="{! config.description__c}" rendered="{! readonly}"/>
+        <apex:inputText size="100" value="{! config.description__c}" rendered="{! !readonly}"/>
+    </apex:column>
+</apex:pageBlockTable>
+</apex:pageBlock>
+
+</apex:form>
+</apex:page>

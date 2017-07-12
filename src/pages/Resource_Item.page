@@ -1,0 +1,10 @@
+<apex:page showheader="false" sidebar="false">
+
+<link href="https://sfdc-styleguide.herokuapp.com/styles.css" rel="stylesheet" type="text/css"/>
+
+<div class="sg-icon-art left icon--custom-16 icon--s" title="Custom83" style="display:inline-block;margin:13px;vertical-align:middle;width:30px;height:30px;border-radius:3px;"></div>
+<div class="sf1label" style="display:inline;font-size:15px;"><b>Resources</b></div>
+
+<iframe src="{!$CurrentPage.parameters.url}" seamless="seamless" frameborder="0" allowtransparency="true" scrolling="no" width="100%" height="800px"/>
+
+</apex:page>

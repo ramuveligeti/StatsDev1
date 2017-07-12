@@ -1,0 +1,45 @@
+<apex:page standardController="Case">
+
+<apex:outputPanel layout="none" rendered="false">
+{!Case.Response__c}
+
+{!Case.Response__r.Workflow_Status__c}{!Case.Response__r.Response_Summary_Status__c}{!Case.Response__r.Status__c}
+{!Case.Response__r.Occupancy_Status__c}{!Case.Response__r.Occupancy_Status_Reason__c} 
+
+{!Case.Response__r.Unit_of_Interest__c}{!Case.Response__r.Unit_of_Interest__r.Address_Type__c}{!Case.Response__r.Unit_of_Interest__r.Address_Sub_Type__c}
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{! Case.Response__c==null }">
+Caes is not associated to a Response.
+</apex:outputPanel>
+
+<apex:pageBlock id="main" rendered="{! Case.Response__c!=null }">
+	<apex:pageBlockSection columns="2"  collapsible="false">
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Address Type" for="addrtype" />
+			<apex:outputField value="{!Case.Response__r.Unit_of_Interest__r.Address_Type__c}" id="addrtype"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Address Sub Type" for="addrsubtype" />
+			<apex:outputField value="{!Case.Response__r.Unit_of_Interest__r.Address_Sub_Type__c}" id="addrsubtype"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Occupancy Status" for="occstatus" />
+			<apex:outputField value="{!Case.Response__r.Occupancy_Status__c}" id="occstatus"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Occupancy Status Reason" for="occstatusreason" />
+			<apex:outputField value="{!Case.Response__r.Occupancy_Status_Reason__c}" id="occstatusreason"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Response Summary Status" for="rss" />
+			<apex:outputField id="rss" value="{!Case.Response__r.Response_Summary_Status__c}" />
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Unit Status" for="unitstatus" />
+			<apex:outputField value="{!Case.Response__r.Workflow_Status__c}" id="unitstatus"/>
+		</apex:pageBlockSectionItem>
+	</apex:pageBlockSection>
+</apex:pageBlock>
+
+</apex:page>

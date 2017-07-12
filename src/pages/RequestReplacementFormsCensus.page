@@ -1,0 +1,67 @@
+<apex:page standardController="Response__c" extensions="RequestReplacementFormsCensusCon">
+    <apex:outputPanel rendered="false">
+        {!Response__c.Instrument__c}
+        {!Response__c.Collection_Instance__r.Collection__c}
+    </apex:outputPanel>
+    <apex:form >
+        <apex:pageBlock id="replacementForm" title="Request Replacement Forms">
+            <c:LoadingWindow />
+            <apex:pageMessages id="pageMessages"/>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!createWorkItems}" value="Create Work Items" reRender="replacementForm" status="loadStatus"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection >
+                <apex:outputField value="{!Response__c.Unit_of_Interest__c}"/>
+                <apex:outputField value="{!Response__c.Document_Number__c}"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Packs</apex:outputLabel>
+                    <apex:selectList value="{!selectedPack}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!availablePacks}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Delivery Mode</apex:outputLabel>
+                    <apex:outputpanel style="padding:3px" styleClass="requiredInput">
+                        <apex:outputpanel styleClass="requiredBlock"></apex:outputpanel>
+                        <apex:selectList value="{!selectedDeliveryMode}" multiselect="false" size="1">
+                            <apex:selectOptions value="{!deliveryModes}"/>
+                        </apex:selectList>
+                    </apex:outputpanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlock title="Instruments" >
+                <apex:pageBlockTable value="{!InstrumentsWrapperList}" var="i">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!i.sel}"/>
+                    </apex:column>
+                    <apex:column headerValue="Instrument">
+                    	<apex:outputText >{!i.instrument.Name}</apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="No.of Copies">
+                        <apex:outputpanel style="padding:3px" styleClass="requiredInput">
+                            <apex:outputpanel styleClass="requiredBlock"></apex:outputpanel>
+                            <apex:inputText value="{!i.copies}"/>
+                        </apex:outputpanel>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+            <apex:pageBlock title="Collaterals" >
+                <apex:pageBlockTable value="{!CollateralWrapperList}" var="c">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!c.sel}"/>
+                    </apex:column>
+                    <apex:column headerValue="Collateral">
+                    	<apex:outputText >{!c.collateral.Name}</apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="No.of Copies">
+                        <apex:outputpanel style="padding:3px" styleClass="requiredInput">
+                            <apex:outputpanel styleClass="requiredBlock"></apex:outputpanel>
+                            <apex:inputText value="{!c.copies}"/>
+                        </apex:outputpanel>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

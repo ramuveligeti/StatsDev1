@@ -1,0 +1,872 @@
+<apex:page controller="WorkItemsQueueView" id="StreamingAPIPage">
+    <apex:includescript value="{!$Resource.cometd}" />
+    <apex:includescript value="{!$Resource.jquery}" />
+    <apex:includescript value="{!$Resource.json2}" />
+    <apex:includescript value="{!$Resource.jquery_cometd}" />
+    <apex:includescript value="{!$Resource.Datejs}" />
+    <style>
+        @keyframes fade-background {
+            from {
+                background-color: #009DDC;
+            }
+
+            to {
+                background-color: white;
+            }
+        }
+
+        .fade-bg {
+            animation-name: fade-background;
+            animation-duration: 2s;
+        }
+    </style>
+    <script type="text/javascript">
+        (function($){
+            $(document).ready(function() {
+                subscribe();
+            });
+        })(jQuery)
+
+        $.cometd.addListener('/meta/connect', _metaConnect);
+        $.cometd.addListener('/meta/*', _metaAny);
+        function subscribe(){
+            // Connect to the CometD endpoint
+            $.cometd.init({
+                url: window.location.protocol+'//'+window.location.hostname+'/cometd/24.0/',
+                requestHeaders: { Authorization: 'OAuth {!$Api.Session_ID}'}
+            });
+
+            // Subscribe to WorkItemUpdates topic. JSON-encoded update will be returned
+            // in the callback
+            $.cometd.subscribe('/topic/WorkItemUpdates', function(message) {
+                getWorkItem(message);
+            });
+        }
+
+        function _metaAny(message){
+            //polling
+        }
+
+        function _metaConnect(message){
+            if($.cometd.isDisconnected()){
+                console.log('disconnected');
+            }
+            if(message.successful === false){
+                console.log('broken');
+                subscribe();
+            }else{
+                console.log('connected');
+            }
+        }
+
+        function disconnect() {
+            $.cometd.disconnect();
+        }
+        window.onbeforeunload = disconnect;
+        /*
+            token:     description:             example:
+            #YYYY#     4-digit year             1999
+            #YY#       2-digit year             99
+            #MMMM#     full month name          February
+            #MMM#      3-letter month name      Feb
+            #MM#       2-digit month number     02
+            #M#        month number             2
+            #DDDD#     full weekday name        Wednesday
+            #DDD#      3-letter weekday name    Wed
+            #DD#       2-digit day number       09
+            #D#        day number               9
+            #th#       day ordinal suffix       nd
+            #hhhh#     2-digit 24-based hour    17
+            #hhh#      military/24-based hour   17
+            #hh#       2-digit hour             05
+            #h#        hour                     5
+            #mm#       2-digit minute           07
+            #m#        minute                   7
+            #ss#       2-digit second           09
+            #s#        second                   9
+            #ampm#     "am" or "pm"             pm
+            #AMPM#     "AM" or "PM"             PM    */
+        Date.prototype.customFormat = function(formatString){
+            var YYYY,YY,MMMM,MMM,MM,M,DDDD,DDD,DD,D,hhhh,hhh,hh,h,mm,m,ss,s,ampm,AMPM,dMod,th;
+            YY = ((YYYY=this.getFullYear())+"").slice(-2);
+            MM = (M=this.getMonth()+1)<10?('0'+M):M;
+            MMM = (MMMM=["January","February","March","April","May","June","July","August","September","October","November","December"][M-1]).substring(0,3);
+            DD = (D=this.getDate())<10?('0'+D):D;
+            DDD = (DDDD=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][this.getDay()]).substring(0,3);
+            th=(D>=10&&D<=20)?'th':((dMod=D%10)==1)?'st':(dMod==2)?'nd':(dMod==3)?'rd':'th';
+            formatString = formatString.replace("#YYYY#",YYYY).replace("#YY#",YY).replace("#MMMM#",MMMM).replace("#MMM#",MMM).replace("#MM#",MM).replace("#M#",M).replace("#DDDD#",DDDD).replace("#DDD#",DDD).replace("#DD#",DD).replace("#D#",D).replace("#th#",th);
+            h=(hhh=this.getHours());
+            if (h==0) h=24;
+            if (h>12) h-=12;
+            hh = h<10?('0'+h):h;
+            hhhh = h<10?('0'+hhh):hhh;
+            AMPM=(ampm=hhh<12?'am':'pm').toUpperCase();
+            mm=(m=this.getMinutes())<10?('0'+m):m;
+            ss=(s=this.getSeconds())<10?('0'+s):s;
+            return formatString.replace("#hhhh#",hhhh).replace("#hhh#",hhh).replace("#hh#",hh).replace("#h#",h).replace("#mm#",mm).replace("#m#",m).replace("#ss#",ss).replace("#s#",s).replace("#ampm#",ampm).replace("#AMPM#",AMPM);
+        };
+
+        //function to get the workitem passed from cometd
+        function getWorkItem(message){
+            var eventType = message.data.event.type;
+            var wId = message.data.sobject.Id;
+            console.log('event=='+eventType);
+            //If the workitem is deleted or status changed to compeleted then remove it from the workitem table
+            if(message.data.sobject.Status__c == 'Completed'){
+                $('#wi_'+wId).css('background', 'green')
+                .fadeOut(1000,function(){
+                    $('#wi_'+wId).remove();
+                });
+                return;
+            }
+            if(message.data.sobject.Escalated__c == true){
+                $('#wi_'+wId).css('background', 'orange')
+                .fadeOut(1000,function(){
+                    $('#wi_'+wId).remove();
+                });
+                return;
+            }
+            if(eventType=='deleted'){
+                $('#wi_'+wId).css('background', 'red')
+                .fadeOut(1000,function(){
+                    $('#wi_'+wId).remove();
+                });
+                return;
+            }
+            //Remote action method to query workitem based on id. fetchworkitem is the remote action in the controller
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.WorkItemsQueueView.fetchWorkItem}',
+                wId,
+                function(result, event){
+                    if (event.status) {
+                        console.log('result='+eventType);
+                        var tableRow;
+                        //If the workitems are updated
+                        if(eventType=='updated'){
+                            $.each( result, function( key, value ) {
+                                console.log('key=='+key+'=value='+value+'=='+key+'_'+wId);
+                                var val = value;
+                                if(key=='Appointment__c' || key=='Follow_up__c'|| key=='LBU__c'||key=='Key__c'||key=='Birth__c'){
+                                    if(value==true) val = '<img src="/img/checkbox_checked.gif" alt="Checked" width="21" height="16" class="checkImg" title="Checked"/>';
+                                    else val = '<img src="/img/checkbox_unchecked.gif" alt="Not Checked" width="21" height="16" class="checkImg" title="Not Checked"/>';
+                                }
+                                if(key=='OwnerId'){
+                                    if(result.Owner.FirstName == null) val = 'Unallocated Phone Work Items';
+                                    else val = result.Owner.FirstName+' '+result.Owner.LastName;
+                                }
+                                if(key=='Response__c'){
+                                    val = result.Response__r.Name;
+                                }
+                                if(key=='Response_Statisical_Priority__c' || key=='Response_Behavioual_Priority__c' || key=='WI_Priority__c' || key=='Response_Overall_Priority_Factor__c'){
+                            	    val = value.toFixed(2);
+                                }
+                                if(key=='Response__r.Overall_Priority__c') val = value.toFixed(4);
+                                if(key=='Call_Back_Time__c'||key=='CreatedDate'){
+                                    var date = new Date(value);
+                                    date = date.customFormat( "#D#/#MM#/#YYYY# #h#:#mm# #AMPM#" );
+                                    $("#wi_table").find("td#" +key+'_'+wId).html(date);
+                                }else $("#wi_table").find("td#" +key+'_'+wId).html(val);
+                            });
+                            var trContent = $("#wi_table").find("tr#" +'wi_'+wId).html();
+                            console.log('trContent=='+$("#wi_table tr#" +'wi_'+wId).html());
+                            if(trContent == null || trContent =='null')return;
+                            tableRow = '<tr id="wi_'+wId+'" class="dataRow even first" onmouseover="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}">';
+                            tableRow += trContent
+                            tableRow += '</tr>';
+                		    $('table#wi_table tr#wi_'+wId).remove();
+                        }
+                        //If the workitems are created
+                        if(eventType=='created'){
+                            tableRow = '<tr id="wi_'+wId+'" class="dataRow even first" onmouseover="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}">';
+                            var trId,trCI,trWIType,trRespOvrPri,trRespOvrPriFactor,trUnit,trLbu,trKey,trBirth,trResp,trRespStat,trRespBeh,trOwner,trStatus,trApp,trFollow,trCallBack,trPriority,trCreated;
+                            $.each( result, function( key, value ) {
+                                var val = value;
+								console.log('key=='+key);
+                                if(key=='Call_Back_Time__c'||key=='CreatedDate'){
+                                    var date = new Date(value);
+                                    date = date.customFormat( "#D#/#MM#/#YYYY# #h#:#mm# #AMPM#" );
+                                }
+                                if(key=='OwnerId'){
+                                    if(result.Owner.FirstName == null) val = 'Unallocated Phone Work Items';
+                                    else val = result.Owner.FirstName+' '+result.Owner.LastName;
+                                }
+                                if(key=='Appointment__c' || key=='Follow_up__c'|| key=='LBU__c'||key=='Key__c'||key=='Birth__c'){
+                                    if(value==true) val = '<img src="/img/checkbox_checked.gif" alt="Checked" width="21" height="16" class="checkImg" title="Checked"/>';
+                                    else val = '<img src="/img/checkbox_unchecked.gif" alt="Not Checked" width="21" height="16" class="checkImg" title="Not Checked"/>';
+                                }
+                                if(key=='Response_Statisical_Priority__c' || key=='Response_Behavioual_Priority__c' || key=='WI_Priority__c' || key=='Response_Overall_Priority_Factor__c' ){
+                            	    val = value.toFixed(2);
+                                }
+                                if(key=='Response__r') {
+									console.log('value=='+value['Overall_Priority__c']);
+									val = value["Overall_Priority__c"].toFixed(5);
+								}
+                                console.log('key1=='+key+'=value='+value+'=='+key+'_'+wId);
+                                if(key=='Id') trId = '<td class="dataCell" colspan="1"><a href="javascript:srcUp(\'/'+wId+'?isdtp=vw\'">'+result.Name+'</a></td>'; //id="Name_'+wId+'"
+                                if(key=='Work_Item_Type__c') trWIType = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='Response__r') trRespOvrPri = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='Response_Overall_Priority_Factor__c') trRespOvrPriFactor = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='Collection_Instance_Name__c') trCI = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='Unit__c') trUnit = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='LBU__c') trLbu = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='Key__c') trKey = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='Birth__c') trBirth = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='Response__c') trResp = '<td class="dataCell" colspan="1"><a href="javascript:srcUp(\'/'+val+'?isdtp=vw\'">'+result.Response__r.Name+'</a></td>';
+                                if(key=='Response_Statisical_Priority__c') trRespStat = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='Response_Behavioual_Priority__c') trRespBeh = '<td class="dataCell" colspan="1">'+val+'</td>';
+                                if(key=='OwnerId') trOwner = '<td class="dataCell" id="OwnerId_'+wId+'" colspan="1">'+val+'</td>';
+                                if(key=='Status__c') trStatus = '<td class="dataCell" id="Status__c_'+wId+'" colspan="1">'+val+'</td>';
+                                if(key=='Appointment__c') trApp = '<td class="dataCell" id="Appointment__c_'+wId+'" colspan="1">'+val+'</td>';
+                                if(key=='Follow_up__c') trFollow = '<td class="dataCell" id="Follow_up__c_'+wId+'" colspan="1">'+val+'</td>';
+                                if(key=='Call_Back_Time__c') trCallBack = '<td class="dataCell" id="Call_Back_Time__c_'+wId+'" colspan="1">'+date+'</td>';
+                                if(key=='WI_Priority__c') trPriority = '<td class="dataCell" id="WI_Priority__c_'+wId+'" colspan="1">'+val+'</td>';
+                                if(key=='CreatedDate') trCreated = '<td class="dataCell" id="CreatedDate_'+wId+'" colspan="1">'+date+'</td>';
+                            });
+                            if(trCallBack==undefined){trCallBack = '<td class="dataCell" id="Call_Back_Time__c_'+wId+'" colspan="1"> </td>';}
+                            tableRow+= trCI+trWIType+trId+trOwner+trStatus+trUnit+trLbu+trKey+trResp+trRespOvrPri+trRespOvrPriFactor+trRespStat+trRespBeh+trApp+trFollow+trCallBack+trPriority+trCreated;
+                            tableRow += '</tr>';
+                            console.log('tableRow=='+tableRow);
+                        }
+                        //function to sort workitems queue table
+                        sortTable(result,tableRow,wId);
+                    } else if (event.type === 'exception') {
+                        //Handle exception
+                    } else {
+
+                    }
+                },
+                {escape: true}
+            );
+        }
+        var inProgressCallBackTableMap,inProgressNoCallBackTableMap,appointmentsTableMap,assignedCallBackTableMap,assignedNoCallBackTableMap,unallocatedAppointmentMap,unallocatedFollowupMap,unallocatedWorkItemPriorityMap,futureWorkItemsMap;
+        var inProgressNoCallbackMapSize,inProgressCallBackMapSize,appointmentRowMapSize,followupRowMapSize,assignedWithCallBackMapSize,assignedWithoutCallBackMapSize,unallocatedAppointmentMapSize,unallocatedFollowupMapSize,unallocatedWorkItemPriorityMapSize,futureWorkItemsMapSize;
+        var ipcallbackCnt,ipNocallbackCnt,appointmentsCnt,followupCnt,assignedCallbackCnt,assignedNoCallbackCnt,unallocAppointmentCnt,unallocFollowupCnt,unallocWIPriorityCnt,futureWICnt =0;
+        var appendIfNull = true;
+	    var CurrentDate = new Date();
+
+        //Sorting workitems queue table
+        function sortTable(result,tableRow,wId){
+            inProgressCallBackTableMap = new Object();
+            inProgressNoCallBackTableMap = new Object();
+            assignedCallBackTableMap = new Object();
+            assignedNoCallBackTableMap = new Object();
+            appointmentsTableMap = new Object();
+            unallocatedAppointmentMap = new Object();
+            unallocatedFollowupMap = new Object();
+            unallocatedWorkItemPriorityMap = new Object();
+            followupTableMap = new Object();
+            futureWorkItemsMap = new Object();
+
+            $('#wi_table tr').each(function (i, row) {
+                var $row = $(row),
+                    $tds = $row.find('td[id*="Status__c"]'),
+                    status = $tds.eq(0).text(),
+                    name = $row.find('td[id*="Name"]'),
+                    owner = $row.find('td[id*="OwnerId"]'),
+                    $appointment = $row.find('td[id*="Appointment__c"]'),
+                    $appointment1 = $appointment.children("img").attr("alt"),
+                    $followup = $row.find('td[id*="Follow_up__c"]'),
+                    $followup1 = $followup.children("img").attr("alt"),
+                    callback = $row.find('td[id*="Call_Back_Time__c"]'),
+                    priority = $row.find('td[id*="WI_Priority__c"]'),
+                    createdDate = $row.find('td[id*="CreatedDate"]');
+                console.log('rw=='+$appointment.children("img").attr("alt"));
+                console.log('bbbb=='+status+'=='+callback.text().trim().length+'=='+$appointment1+'=='+$followup1+'==='+owner.text()+'==='+callback.text().trim().length);
+                //In progress with call back
+                if(status=='In Progress' && callback.text().trim().length>0) inProgressCallBackTableMap[$row.index()] = $row;
+                //In progress with no call back
+                if(status=='In Progress' && callback.text().trim().length==0) inProgressNoCallBackTableMap[$row.index()] = $row;
+                //Assigned appointments or followups where callback time <= current time
+                if(status!='In Progress' && ($appointment1=='Checked' || $followup1=='Checked') && owner.text().trim() != 'Unallocated Phone Work Items' && callback.text().trim().length>0 && Date.parse(callback.text()).getTime()<=CurrentDate.getTime()) appointmentsTableMap[$row.index()] = $row;
+                /*/Assigned appointments where callback time <= current datetime
+                if(status!='In Progress' && $appointment1=='Checked' && owner.text().trim() != 'Unallocated Phone Work Items' && callback.text().trim().length>0 && Date.parse(callback.text()).getTime()<=CurrentDate.getTime()) appointmentsTableMap[$row.index()] = $row;
+                //Assigned followups where callback time <= current datetime
+                if(status!='In Progress' && $followup1=='Checked' && owner.text().trim() != 'Unallocated Phone Work Items' && callback.text().trim().length>0 && Date.parse(callback.text()).getTime()<=CurrentDate.getTime()) followupTableMap[$row.index()] = $row;
+                */
+                //Assigned work items where callback time <= current datetime
+                if(status!='In Progress' && $appointment1=='Not Checked' && $followup1=='Not Checked' && owner.text().trim() != 'Unallocated Phone Work Items' && callback.text().trim().length>0 && Date.parse(callback.text()).getTime()<=CurrentDate.getTime()) assignedCallBackTableMap[$row.index()] = $row;
+                //Assigned work items where callback time is null
+                if(status!='In Progress' && $appointment1=='Not Checked' && $followup1=='Not Checked' && owner.text().trim() != 'Unallocated Phone Work Items' && callback.text().trim().length==0) assignedNoCallBackTableMap[$row.index()] = $row;
+
+                /*/Unallocated appointment or followup work items where callback time <= current datetime
+                if(status!='In Progress' && owner.text().trim() == 'Unallocated Phone Work Items' && callback.text().trim().length>0 && ($appointment1=='Checked' || $followup1=='Checked') && Date.parse(callback.text()).getTime()<=CurrentDate.getTime()) unallocatedAppointmentMap[$row.index()] = $row;*/
+
+                //Unallocated appointment work items where callback time <= current datetime
+                if(status!='In Progress' && owner.text().trim() == 'Unallocated Phone Work Items' && callback.text().trim().length>0 && $appointment1=='Checked' && Date.parse(callback.text()).getTime()<=CurrentDate.getTime()) unallocatedAppointmentMap[$row.index()] = $row;
+                //Unallocated followup work items where callback time <= current datetime
+                if(status!='In Progress' && owner.text().trim() == 'Unallocated Phone Work Items' && callback.text().trim().length>0 && $followup1=='Checked' && Date.parse(callback.text()).getTime()<=CurrentDate.getTime()) unallocatedFollowupMap[$row.index()] = $row;
+
+                //Unallocated work items with priority
+                if(status!='In Progress' && owner.text().trim() == 'Unallocated Phone Work Items' && priority.text().trim().length>0 && $followup1=='Not Checked'&& $appointment1=='Not Checked') unallocatedWorkItemPriorityMap[$row.index()] = $row;
+
+                //Work items that are scheduled for future date
+                if(status!='In Progress' && callback.text().trim().length>0 && Date.parse(callback.text()).getTime() > CurrentDate.getTime()) futureWorkItemsMap[$row.index()] = $row;
+            });
+            //inProgressMapSize = Object.keys(inProgressMap).length;
+            inProgressCallBackMapSize = Object.keys(inProgressCallBackTableMap).length;
+            console.log('inProgressCallBackMapSize=='+inProgressCallBackMapSize);
+            inProgressNoCallbackMapSize = Object.keys(inProgressNoCallBackTableMap).length;
+            console.log('inProgressNoCallbackMapSize=='+inProgressNoCallbackMapSize);
+            ipNocallbackCnt = inProgressCallBackMapSize+inProgressNoCallbackMapSize;
+            console.log('ipNocallbackCnt=='+ipNocallbackCnt);
+
+            appointmentRowMapSize = Object.keys(appointmentsTableMap).length;
+            console.log('appointmentRowMapSize=='+appointmentRowMapSize);
+            appointmentsCnt = ipNocallbackCnt+appointmentRowMapSize;
+            console.log('appointmentsCnt=='+appointmentsCnt);
+
+            /*followupRowMapSize = Object.keys(followupTableMap).length;
+            console.log('followupRowMapSize=='+followupRowMapSize);
+            followupCnt = appointmentsCnt+followupRowMapSize;
+            console.log('followupCnt=='+followupCnt);*/
+
+            assignedWithCallBackMapSize = Object.keys(assignedCallBackTableMap).length;
+            console.log('assignedWithCallBackMapSize=='+assignedWithCallBackMapSize);
+            assignedCallbackCnt =appointmentsCnt+assignedWithCallBackMapSize;
+            console.log('assignedCallbackCnt=='+assignedCallbackCnt);
+
+            assignedWithoutCallBackMapSize = Object.keys(assignedNoCallBackTableMap).length;
+            console.log('assignedWithoutCallBackMapSize=='+assignedWithoutCallBackMapSize);
+            assignedNoCallbackCnt = assignedCallbackCnt+assignedWithoutCallBackMapSize;
+            console.log('assignedNoCallbackCnt=='+assignedNoCallbackCnt);
+
+		    unallocatedAppointmentMapSize = Object.keys(unallocatedAppointmentMap).length;
+            console.log('unallocatedAppointmentMapSize=='+unallocatedAppointmentMapSize);
+            unallocAppointmentCnt = assignedNoCallbackCnt+unallocatedAppointmentMapSize;
+            console.log('unallocAppointmentCnt=='+unallocAppointmentCnt);
+
+            unallocatedFollowupMapSize = Object.keys(unallocatedFollowupMap).length;
+            console.log('unallocatedFollowupMapSize=='+unallocatedFollowupMapSize);
+            unallocFollowupCnt = unallocAppointmentCnt+unallocatedFollowupMapSize;
+            console.log('unallocFollowupCnt=='+unallocFollowupCnt);
+
+            unallocatedWorkItemPriorityMapSize = Object.keys(unallocatedWorkItemPriorityMap).length;
+            console.log('unallocatedWorkItemPriorityMapSize=='+unallocatedWorkItemPriorityMapSize);
+            unallocWIPriorityCnt = unallocFollowupCnt+unallocatedWorkItemPriorityMapSize;
+            console.log('unallocWIPriorityCnt=='+unallocWIPriorityCnt);
+
+            futureWorkItemsMapSize = Object.keys(futureWorkItemsMap).length;
+            console.log('futureWorkItemsMapSize=='+futureWorkItemsMapSize);
+            futureWICnt = unallocWIPriorityCnt+futureWorkItemsMapSize;
+            console.log('futureWICnt=='+futureWICnt);
+
+		    console.log('appointmentRowMapSize1=='+appointmentRowMapSize+'=='+unallocatedAppointmentMapSize+'=='+unallocAppointmentCnt);
+            processSorting(result,tableRow,wId);
+
+            $('table#wi_table tr#wi_'+wId).addClass('fade-bg');
+            setTimeout(function() {
+                $('table#wi_table tr#wi_'+wId).removeClass('fade-bg');
+            }, 3000);
+        }
+        function processInProgressCallBack(result,tableRow,wId){
+            //logic to assign in progress work item with callback
+            //If no existing records found with matching criteria, then put the workitem on top of the list
+            //else loop through existing in progress work items sort based on callback time and place inthe right order
+            if(inProgressCallBackMapSize==0){
+                $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in inProgressCallBackTableMap){
+                    var $row = $(inProgressCallBackTableMap[m]),
+                        callback = $row.find('td[id*="Call_Back_Time__c"]');
+                    if(result.Call_Back_Time__c < Date.parse(callback.text()).getTime()){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+                    }
+                }
+                if(appendIfNull){
+                    console.log('In Append=='+(inProgressCallBackMapSize-1)+'=='+tableRow);
+                    $('#wi_table > tbody > tr').eq(inProgressCallBackMapSize-1).after(tableRow);
+                }
+                return;
+            }
+        }
+
+        function processInProgressNoCallback(result,tableRow,wId){
+            //logic to assign in progress work item with callback=null
+            //If no existing records found with matching criteria, then put the workitem on bottom of the in progress workitems list
+            //else loop through existing in progress work items sort based on created date time and place inthe right order
+            if(inProgressNoCallbackMapSize==0){
+                if(inProgressCallBackMapSize>0) $('#wi_table > tbody > tr').eq(inProgressCallBackMapSize-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in inProgressNoCallBackTableMap){
+                    var $row = $(inProgressNoCallBackTableMap[m]),
+                        createdDate = $row.find('td[id*="CreatedDate"]');
+                    if(result.CreatedDate < Date.parse(createdDate.text()).getTime()){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+                    }
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(ipNocallbackCnt-1).after(tableRow);}
+                return;
+            }
+        }
+
+        function processAppointment(result,tableRow,wId){
+            //logic to assign new or pending work item where appointment is true and callback not null
+            //If no existing records found with matching criteria, then put the workitem on bottom of the in progress workitems list
+            //else loop through existing new or pending work items where appointment is true and sort based on callback time and place inthe right order
+            console.log('appointmentRowMapSize=='+appointmentRowMapSize);
+            if(appointmentRowMapSize==0){
+                if(ipNocallbackCnt>0) $('#wi_table > tbody > tr').eq(ipNocallbackCnt-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in appointmentsTableMap){
+                    var $row = $(appointmentsTableMap[m]),
+                        callback = $row.find('td[id*="Call_Back_Time__c"]');
+                    if(result.Call_Back_Time__c < Date.parse(callback.text()).getTime()){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+                    }
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(appointmentsCnt-1).after(tableRow);}
+                return;
+            }
+        }
+
+        /*function processFollowup(result,tableRow,wId){
+            //logic to assign new or pending work item where followup is true and callback not null
+            //If no existing records found with matching criteria, then put the workitem on bottom of the 'in progress'/appointment workitems list
+            //else loop through existing new or pending work items where followup is true and sort based on callback time and place inthe right order
+            console.log('followupRowMapSize=='+followupRowMapSize);
+            if(followupRowMapSize==0){
+                if(appointmentsCnt>0) $('#wi_table > tbody > tr').eq(appointmentsCnt-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in followupTableMap){
+                    var $row = $(followupTableMap[m]),
+                        callback = $row.find('td[id*="Call_Back_Time__c"]');
+                    console.log('aaa='+result.Call_Back_Time__c+'=='+new Date(result.Call_Back_Time__c).getTime()+'=='+callback.text()+'=='+Date.parse(callback.text()).getTime()+'=='+m);
+                    if(result.Call_Back_Time__c < Date.parse(callback.text()).getTime()){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+                    }
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(followupCnt-1).after(tableRow);}
+                return;
+            }
+        }*/
+
+        function processAssignedCallback(result,tableRow,wId){
+            //logic to assign new or pending work item where owner is assigned but not an appointment or followup and callback not null
+            //If no existing records found with matching criteria, then put the workitem on bottom of the 'in progress'/appointment/followup workitems list
+            //else loop through existing new or pending work items where followup is false and appointment=false and assigned to any user, and sort based on callback time and place inthe right order
+            if(assignedWithCallBackMapSize==0){
+                if(appointmentsCnt>0) $('#wi_table > tbody > tr').eq(appointmentsCnt-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in assignedCallBackTableMap){
+                    var $row = $(assignedCallBackTableMap[m]),
+                        callback = $row.find('td[id*="Call_Back_Time__c"]');
+                    if(result.Call_Back_Time__c < Date.parse(callback.text()).getTime()){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+                    }
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(assignedCallbackCnt-1).after(tableRow);}
+                return;
+            }
+        }
+
+        function processAssignedNoCallback(result,tableRow,wId){
+            //logic to assign new or pending work item where owner is assigned but not an appointment or followup and callback is null
+            //If no existing records found with matching criteria, then put the workitem on bottom of the 'in progress'/appointment/followup workitems/assigned callback list
+            //else loop through existing new or pending work items where followup is false and appointment=false and assigned to any user and callback is null, and sort based on createddate time and place inthe right order
+            if(assignedWithoutCallBackMapSize==0){
+                if(assignedCallbackCnt>0) $('#wi_table > tbody > tr').eq(assignedCallbackCnt-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in assignedNoCallBackTableMap){
+                    var $row = $(assignedNoCallBackTableMap[m]),
+                        createdDate = $row.find('td[id*="CreatedDate"]');
+                    if(result.CreatedDate < Date.parse(createdDate.text()).getTime()){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+                    }
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(assignedNoCallbackCnt-1).after(tableRow);}
+                return;
+            }
+        }
+
+        function processUnallocatedAppointment(result,tableRow,wId){
+            if(unallocatedAppointmentMapSize==0){
+                if(assignedNoCallbackCnt>0) $('#wi_table > tbody > tr').eq(assignedNoCallbackCnt-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in unallocatedAppointmentMap){
+                    var $row = $(unallocatedAppointmentMap[m]),
+                        callback = $row.find('td[id*="Call_Back_Time__c"]'),
+					    priority = $row.find('td[id*="WI_Priority__c"]'),
+						workItemNumber = $row.find('td[id*="workItemNumber"]'),
+						createdDate = $row.find('td[id*="CreatedDate"]');
+            	    console.log('result.Call_Back_Time__c=='+result.Call_Back_Time__c+'=='+callback.text()+'=='+Date.parse(callback.text()));
+
+                    /*if(result.Call_Back_Time__c < Date.parse(callback.text()).getTime()){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+                    }*/
+				    if(result.Call_Back_Time__c === Date.parse(callback.text()).getTime()){
+					    if(parseFloat(result.WI_Priority__c).toFixed(2) > parseFloat(priority.text()).toFixed(2)){
+						    appendIfNull = false;
+						    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+						    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+						    break;
+					    }else if (parseFloat(result.WI_Priority__c).toFixed(2) === parseFloat(priority.text()).toFixed(2)){
+						    if(result.CreatedDate < Date.parse(createdDate.text()).getTime()){
+							    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+							    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+							    break;
+							}else if(result.CreatedDate === Date.parse(createdDate.text()).getTime()){
+								if(result.Name < workItemNumber.text()){
+									if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+									else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+									break;
+								}
+						    }
+					    }
+				    }else if(result.Call_Back_Time__c <= Date.parse(callback.text()).getTime()){
+					    appendIfNull = false;
+					    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+					    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+					    break;
+				    }
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(unallocAppointmentCnt-1).after(tableRow);}
+                return;
+            }
+        }
+
+        function processUnallocatedFollowup(result,tableRow,wId){
+            if(unallocatedFollowupMapSize==0){
+                if(unallocAppointmentCnt>0) $('#wi_table > tbody > tr').eq(unallocAppointmentCnt-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in unallocatedFollowupMap){
+                    var $row = $(unallocatedFollowupMap[m]),
+						priority = $row.find('td[id*="WI_Priority__c"]'),
+						workItemNumber = $row.find('td[id*="workItemNumber"]'),
+						createdDate = $row.find('td[id*="CreatedDate"]'),
+                        callback = $row.find('td[id*="Call_Back_Time__c"]');
+
+					/*if(result.Call_Back_Time__c < Date.parse(callback.text()).getTime()){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+                    }*/
+				    if(result.Call_Back_Time__c === Date.parse(callback.text()).getTime()){
+					    if(parseFloat(result.WI_Priority__c).toFixed(2) > parseFloat(priority.text()).toFixed(2)){
+						    appendIfNull = false;
+						    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+						    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+						    break;
+					    }else if (parseFloat(result.WI_Priority__c).toFixed(2) === parseFloat(priority.text()).toFixed(2)){
+						    if(result.CreatedDate < Date.parse(createdDate.text()).getTime()){
+							    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+							    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+							    break;
+							}else if(result.CreatedDate === Date.parse(createdDate.text()).getTime()){
+								if(result.Name < workItemNumber.text()){
+									if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+									else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+									break;
+								}
+						    }
+					    }
+				    }else if(result.Call_Back_Time__c <= Date.parse(callback.text()).getTime()){
+					    appendIfNull = false;
+					    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+					    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+					    break;
+				    }
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(unallocFollowupCnt-1).after(tableRow);}
+                return;
+            }
+        }
+
+        function processUnallocatedWorkItemPriority(result,tableRow,wId){
+            if(unallocatedWorkItemPriorityMapSize==0){
+                if(unallocFollowupCnt>0) $('#wi_table > tbody > tr').eq(unallocFollowupCnt-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in unallocatedWorkItemPriorityMap){
+                    var $row = $(unallocatedWorkItemPriorityMap[m]),
+						workItemNumber = $row.find('td[id*="workItemNumber"]'),
+						createdDate = $row.find('td[id*="CreatedDate"]'),
+                        priority = $row.find('td[id*="WI_Priority__c"]');
+                    if(parseFloat(result.WI_Priority__c).toFixed(2) > parseFloat(priority.text()).toFixed(2)){
+                        appendIfNull = false;
+                        if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+                        else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+                        break;
+					}else if (parseFloat(result.WI_Priority__c).toFixed(2) === parseFloat(priority.text()).toFixed(2)){
+						if(result.CreatedDate < Date.parse(createdDate.text()).getTime()){
+							if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+							else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+							break;
+						}else if(result.CreatedDate === Date.parse(createdDate.text()).getTime()){
+							if(result.Name < workItemNumber.text()){
+								if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+								else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+								break;
+							}
+						}
+					}
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(unallocWIPriorityCnt-1).after(tableRow);}
+                return;
+            }
+        }
+
+        function processFutureWorkItems(result,tableRow,wId){
+            if(futureWorkItemsMapSize==0){
+                if(unallocWIPriorityCnt>0) $('#wi_table > tbody > tr').eq(unallocWIPriorityCnt-1).after(tableRow);
+                else $('#wi_table > tbody > tr').eq(0).before(tableRow);
+            }else{
+                for(var m in futureWorkItemsMap){
+                    var $row = $(futureWorkItemsMap[m]),
+                        callback = $row.find('td[id*="Call_Back_Time__c"]'),
+						workItemNumber = $row.find('td[id*="workItemNumber"]'),
+					    priority = $row.find('td[id*="WI_Priority__c"]'),
+					    createdDate = $row.find('td[id*="CreatedDate"]');
+
+				    if(result.Call_Back_Time__c === Date.parse(callback.text()).getTime()){
+					    if(parseFloat(result.WI_Priority__c).toFixed(2) > parseFloat(priority.text()).toFixed(2)){
+						    appendIfNull = false;
+						    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+						    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+						    break;
+					    }else if (parseFloat(result.WI_Priority__c).toFixed(2) === parseFloat(priority.text()).toFixed(2)){
+						    if(result.CreatedDate < Date.parse(createdDate.text()).getTime()){
+							    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+							    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+							    break;
+						    }else if(result.CreatedDate === Date.parse(createdDate.text()).getTime()){
+								if(result.Name < workItemNumber.text()){
+									if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+									else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+									break;
+								}
+							}
+					    }
+				    }else if(result.Call_Back_Time__c <= Date.parse(callback.text()).getTime()){
+					    appendIfNull = false;
+					    if(m>0) $('#wi_table > tbody > tr').eq(m-1).after(tableRow);
+					    else $('#wi_table > tbody > tr').eq(m).before(tableRow);
+					    break;
+				    }
+                }
+                if(appendIfNull){$('#wi_table > tbody > tr').eq(futureWICnt-1).after(tableRow);}
+                return;
+            }
+        }
+
+        function processSorting(result,tableRow,wId){
+            //var mapSize = Object.keys(rowMap).length;
+            //In Progress when callback not null
+            console.log('result.Status__c=='+result.Status__c+'=='+result.Call_Back_Time__c+'=='+result.Owner.FirstName+'=='+result.Owner.FirstName);
+            if(result.Status__c == 'In Progress' && result.Call_Back_Time__c!=undefined){
+                processInProgressCallBack(result,tableRow,wId);
+            }
+            //In Progress when callback is null
+            else if(result.Status__c == 'In Progress' && result.Call_Back_Time__c==undefined){
+                processInProgressNoCallback(result,tableRow,wId);
+            }
+            //Assigned work items where appointment or followup is true and callback <= current time
+		    else if(result.Status__c !='In Progress' && (result.Appointment__c || result.Follow_up__c) && result.Call_Back_Time__c!=undefined && result.Call_Back_Time__c <= CurrentDate.getTime() && result.Owner.FirstName !=undefined){
+                processAppointment(result,tableRow,wId);
+		    }
+
+            /*/Assigned work items where appointment is true and callback is not null
+		    else if(result.Status__c !='In Progress' && result.Appointment__c && result.Call_Back_Time__c!=undefined && result.Owner.FirstName !=undefined){
+                processAppointment(result,tableRow,wId);
+		    }
+            //Assigned work items where followup is true
+		    else if(result.Status__c !='In Progress' && result.Follow_up__c && result.Call_Back_Time__c!=undefined && result.Owner.FirstName !=undefined){
+                processFollowup(result,tableRow,wId);
+		    }*/
+
+            //Assigned work item where appointment & followup is false and callback <= current time
+		    else if(result.Status__c !='In Progress' && !result.Appointment__c && !result.Follow_up__c && result.Call_Back_Time__c!=undefined && result.Call_Back_Time__c <= CurrentDate.getTime() && result.Owner.FirstName !=undefined){
+                processAssignedCallback(result,tableRow,wId);
+		    }
+            //Assigned work item where appointment & followup is false and callback is null
+		    else if(result.Status__c !='In Progress' && !result.Appointment__c && !result.Follow_up__c && result.Call_Back_Time__c==undefined && result.Owner.FirstName !=undefined){
+                processAssignedNoCallback(result,tableRow,wId);
+		    }
+            /*/Unallocated work item where appointment or follow up is true and callback <= current time
+            else if(result.Status__c !='In Progress' && (result.Appointment__c || result.Follow_up__c) && result.Call_Back_Time__c!=undefined && result.Call_Back_Time__c <= CurrentDate.getTime() && result.Owner.FirstName==undefined){
+        	    processUnallocatedAppointment(result,tableRow,wId);
+            }*/
+            //Unallocated work item where appointment is true and callback is not null
+            else if(result.Status__c !='In Progress' && result.Appointment__c && result.Call_Back_Time__c!=undefined && result.Call_Back_Time__c <= CurrentDate.getTime() && result.Owner.FirstName==undefined){
+        	    processUnallocatedAppointment(result,tableRow,wId);
+            }
+            //Unallocated work item where followup is true and callback is not null
+            else if(result.Status__c !='In Progress' && result.Follow_up__c && result.Call_Back_Time__c!=undefined && result.Call_Back_Time__c <= CurrentDate.getTime() && result.Owner.FirstName==undefined){
+        	    processUnallocatedFollowup(result,tableRow,wId);
+            }
+            //Unallocated work item where appointment=false and followup=false and workitem priority is not null
+            else if(result.Status__c !='In Progress' && !result.Appointment__c && !result.Follow_up__c && result.WI_Priority__c !=undefined && result.WI_Priority__c.length>0 && result.Owner.FirstName==undefined){
+        	    processUnallocatedWorkItemPriority(result,tableRow,wId);
+            }
+            //Unallocated work item where appointment=false and followup=false and workitem priority is not null
+            else if(result.Status__c !='In Progress' && result.Call_Back_Time__c > CurrentDate.getTime()){
+        	    processFutureWorkItems(result,tableRow,wId);
+            }
+            appendIfNull = true;
+        }
+        function refreshTable(){
+            $('label#refresh').show();
+            var table = document.getElementById("wi_table");
+            subscribe();
+            table.refresh ();
+        }
+    </script>
+    <c:LoadingWindow />
+    <apex:form >
+        <apex:pageblock title="Work Items Queue">
+            <apex:commandbutton value="Refresh" onclick="refreshTable();" />
+            <label id="refresh" style="display:none">Refreshing...</label>
+            <table id="wi_table" class="list" border="0" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr class="headerRow">
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Collection Instance Name</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Work Item Type</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Work Item Number</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Owner</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Status</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Unit of Interest ID</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>LBU</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Key</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Response</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Response Overall Priority</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Response Overall Priority Factor</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Response Statisical Priority</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Response Behavioual Priority</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Appointment</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Follow-up</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Call Back Time</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>WI Priority</div>
+                        </th>
+                        <th class="headerRow" scope="col" colspan="1">
+                            <div>Created Date</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!WIs}" var="wi" id="wi_table">
+                        <tr id="wi_{!wi.Id}" class="dataRow even first" onmouseover="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}" style="">
+                            <td class="dataCell" colspan="1">{!wi.Collection_Instance_Name__c}</td>
+                            <td class="dataCell" colspan="1">{!wi.Work_Item_Type__c}</td>
+                            <td class="dataCell" colspan="1" id="workItemNumber">
+                                <a href="javascript:srcUp('/{!wi.Id}?isdtp=vw');">{!wi.name}</a>
+                            </td>
+                            <td class="dataCell" id="OwnerId_{!wi.Id}" colspan="1">
+                                <apex:outputtext value="{!wi.Owner.FirstName} {!wi.Owner.LastName}" rendered="{!wi.Owner.FirstName != Null}" />
+                                <apex:outputtext value="Unallocated Phone Work Items" rendered="{!wi.Owner.FirstName == Null}" />
+                            </td>
+                            <td class="dataCell" id="Status__c_{!wi.Id}" colspan="1">{!wi.Status__c}</td>
+                            <td class="dataCell" colspan="1">{!wi.Unit__c}</td>
+                            <td class="dataCell" colspan="1">
+                                <apex:outputtext rendered="{!wi.LBU__c}">
+                                    <img src="/img/checkbox_checked.gif" alt="Checked" width="21" height="16" class="checkImg" title="Checked" />
+                                </apex:outputtext>
+                                <apex:outputtext rendered="{! !wi.LBU__c}">
+                                    <img src="/img/checkbox_unchecked.gif" alt="Not Checked" width="21" height="16" class="checkImg" title="Not Checked" />
+                                </apex:outputtext>
+                            </td>
+                            <td class="dataCell" colspan="1">
+                                <apex:outputtext rendered="{!wi.Key__c}">
+                                    <img src="/img/checkbox_checked.gif" alt="Checked" width="21" height="16" class="checkImg" title="Checked" />
+                                </apex:outputtext>
+                                <apex:outputtext rendered="{! !wi.Key__c}">
+                                    <img src="/img/checkbox_unchecked.gif" alt="Not Checked" width="21" height="16" class="checkImg" title="Not Checked" />
+                                </apex:outputtext>
+                            </td>
+                            <td class="dataCell" colspan="1">
+                                <a href="javascript:srcUp('/{!wi.Response__c}?isdtp=vw');">{!wi.Response__r.Name}</a>
+                            </td>
+                            <td class="dataCell" colspan="1">{!wi.Response__r.Overall_Priority__c}</td>
+                            <td class="dataCell" colspan="1">{!wi.Response_Overall_Priority_Factor__c}</td>
+                            <td class="dataCell" colspan="1">{!wi.Response_Statisical_Priority__c}</td>
+                            <td class="dataCell" colspan="1">{!wi.Response_Behavioual_Priority__c}</td>
+                            <td class="dataCell" id="Appointment__c_{!wi.Id}" colspan="1">
+                                <apex:outputtext rendered="{!wi.Appointment__c}">
+                                    <img src="/img/checkbox_checked.gif" alt="Checked" width="21" height="16" class="checkImg" title="Checked" />
+                                </apex:outputtext>
+                                <apex:outputtext rendered="{! !wi.Appointment__c}">
+                                    <img src="/img/checkbox_unchecked.gif" alt="Not Checked" width="21" height="16" class="checkImg" title="Not Checked" />
+                                </apex:outputtext>
+                            </td>
+                            <td class="dataCell" id="Follow_up__c_{!wi.Id}" colspan="1">
+                                <apex:outputtext rendered="{!wi.Follow_up__c}">
+                                    <img src="/img/checkbox_checked.gif" alt="Checked" width="21" height="16" class="checkImg" title="Checked" />
+                                </apex:outputtext>
+                                <apex:outputtext rendered="{! !wi.Follow_up__c}">
+                                    <img src="/img/checkbox_unchecked.gif" alt="Not Checked" width="21" height="16" class="checkImg" title="Not Checked" />
+                                </apex:outputtext>
+                            </td>
+                            <td class="dataCell" id="Call_Back_Time__c_{!wi.Id}" colspan="1">
+                                <apex:outputfield value="{!wi.Call_Back_Time__c}" />
+                            </td>
+                            <td class="dataCell" id="WI_Priority__c_{!wi.Id}" colspan="1">{!wi.WI_Priority__c}</td>
+                            <td class="dataCell" id="CreatedDate_{!wi.Id}" colspan="1">
+                                <apex:outputfield value="{!wi.CreatedDate}" />
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

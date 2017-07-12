@@ -1,0 +1,17 @@
+{
+    "projectName": "Stats Dev1",
+    "username": "ramu.veligeti@stats.govt.nz.dev1",
+    "id": "2844ba20-2663-11e7-88c9-87917621b592",
+    "namespace": "",
+    "orgType": "developer",
+    "loginUrl": "https://login.salesforce.com/",
+    "instanceUrl": "https://cs22.salesforce.com",
+    "workspace": "/Users/work/Documents/Workspace/",
+    "subscription": [
+        "ApexClass",
+        "ApexComponent",
+        "ApexPage",
+        "ApexTrigger",
+        "StaticResource"
+    ]
+}

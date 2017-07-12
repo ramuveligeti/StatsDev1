@@ -1,0 +1,15 @@
+<apex:page standardController="Activity_Schedule__c" extensions="DeleteActivitySchedule" action="{!deleteActionMethod}">
+    <apex:outputPanel rendered="false" id="hiddenFields">
+    	{!Activity_Schedule__c.Collection_Instance__c}
+    </apex:outputPanel>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessage rendered="{!warningWI}" severity="Warning" strength="1" summary="WARNING: Work Items for this activity have already been processed. Deleting this activity schedule will delete all New/In Progress/Completed/Closed Work Items. Do you still want to delete?"></apex:pageMessage>
+            <apex:pageMessage rendered="{! !warningWI}" severity="Warning" strength="1" summary="Are you sure?"></apex:pageMessage>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!deletionOfWorkItemsAndActivityScheduleFilters}" value="Yes" />
+                <apex:commandButton action="{!cancel}" value="No"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page standardController="Unit__c" sidebar="false" showHeader="false"
+ showChat="false" standardStylesheets="true">
+ <slt:Timeline value="{!Unit__c.Id}" csat="true" />
+</apex:page>

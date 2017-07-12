@@ -1,0 +1,70 @@
+<apex:page controller="RequestWorkItemExCon">
+    <div id="worktimeControls">
+        <button id="requrestWorkButton" onclick="requestWorkItem()">Request Work Item</button>
+    </div>
+
+    <style>
+        /*
+        	!Reset Button Styles!
+        	These style override the salesforce defaults.
+        */
+        #worktimeControls > button {
+        	cursor: pointer;
+
+        	display: block;
+
+            width: 100%;
+
+            margin: 0;
+            margin-top: 10px;
+			padding: .375em 1em;
+ 			border: 1px solid #0275d8;
+
+            font-weight: normal;
+        	line-height: 1.5;
+            font-size: 1em;
+
+            color: #fff;
+            background: #0275d8;
+
+            -webkit-border-radius: .25em;
+               -moz-border-radius: .25em;
+                    border-radius: .25em;
+        }
+
+        #worktimeControls > button:hover {
+            color: #fff;
+            background-color: #025aa5;
+            border-color: #01549b;
+        }
+
+        #worktimeControls > button:disabled {
+            cursor: not-allowed;
+
+            color: #fff;
+            background-color: #808080;
+            border-color: #808080;
+
+            opacity: .65;
+        }
+    </style>
+
+    <apex:includeScript value="/support/console/20.0/integration.js"/>
+    <script type="text/javascript">
+    Visualforce.remoting.timeout = 120000;
+
+    function requestWorkItem() {
+        document.getElementById('requrestWorkButton').disabled = true;
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.RequestWorkItemExCon.requestWorkItem}',
+            function invokeActionCallback(workItem, event) {
+            if (event.status) {
+                sforce.console.openPrimaryTab(undefined, '/' + workItem.Id, true, workItem.Name);
+            }else{
+                window.alert('The system couldn\'t find a work item in the queue to assign to you.\n\nContact your team lead to check your skillsets or try again later.');
+            }
+            document.getElementById('requrestWorkButton').disabled = false;
+        });
+    }
+    </script>
+</apex:page>

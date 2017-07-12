@@ -1,0 +1,130 @@
+<apex:page standardController="Response__c" extensions="ResponseWorkItemListCX" standardStylesheets="false">
+    <style>
+        body.hasMotif {
+        	margin: 0px;
+        }
+
+        #workItemRelatedListOverride h1 {
+        	color: #393f49;
+        	font-size: 1.2em;
+        	padding-top: 5px;
+        	padding-bottom: 5px;
+        }
+        
+        #workItemRelatedListOverride table{
+            table-layout : fixed;
+            font-size: 1.2em;
+            width: 100%:
+        }
+        
+        #workItemRelatedListOverride table tr th {
+            padding: 5px 5px 5px 0px;
+            color: #a1adb7;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+        
+        #workItemRelatedListOverride table tr th.actionColumn {
+        	padding: 5px 12px 5px 0px;
+        }
+        
+        #workItemRelatedListOverride table td {
+            font-size: 0.9em;
+            padding: 5px 5px 5px 0px;
+        }
+        
+        #workItemRelatedListOverride table td > a {
+            text-decoration: none;
+            color: #1b7ab7;
+        }
+        
+        #workItemRelatedListOverride table td > a:hover {
+            text-decoration: none;
+            color: #1b7ab7;
+            cursor: pointer;
+        }
+        
+    </style>
+    
+    <apex:includeScript value="/support/console/22.0/integration.js"/>
+    <script type="text/javascript">
+    var CallCenterUtils = (function(document, sforce) {
+        'use strict';
+        
+        return {
+            openWorkItemDetailsInPrimaryTab: openWorkItemDetailsInPrimaryTab,
+            openWorkItemEditInSubTab: openWorkItemEditInSubTab
+        };
+        
+        function openWorkItemDetailsInPrimaryTab(workItemId) {
+            sforce.console.openPrimaryTab(undefined, '/' + workItemId, true, 'Work Item');
+            // prevent default action and stop event propagation
+            return false;
+        }
+        
+        function openWorkItemEditInSubTab(workItemId) {
+            sforce.console.getEnclosingPrimaryTabId(openSubtab);
+            // prevent default action and stop event propagation
+            return false;
+            
+            function openSubtab(result) {
+                //Now that we have the primary tab ID, we can open a new subtab in it
+                var primaryTabId = result.id;
+                sforce.console.openSubtab(primaryTabId , '/' + workItemId + '/e', false, 'Work Item', null, openSubtabSuccess, 'Work Item');
+            }
+            
+            function openSubtabSuccess(result) {
+                sforce.console.focusSubtabById(result.id);
+            }
+        }
+    })(document, sforce);
+    </script>
+    <div id="workItemRelatedListOverride">	
+        <h1>Work Items</h1>
+        
+        <table border="0" >
+            
+            <thead>
+                <tr>
+                    
+                    <th class="actionColumn">ACTION</th>
+                    
+                    <th>WORK ITEM NUMBER</th>
+                    
+                    <th>WORK ITEM TYPE</th>
+                    
+                    <th>DELIVERY MODE</th>
+                    
+                    <th>STATUS</th>
+                    
+                </tr>
+            </thead>
+            
+            <tbody>
+                <apex:repeat value="{!workItems}" var="workItem">
+                    
+                    <tr>
+                        
+                        <td>
+                            <a href="javascript:void(0)" onClick="CallCenterUtils.openWorkItemEditInSubTab('{!workItem.Id}');">Edit</a>
+                        </td>
+                        
+                        <td>
+                            <a href="javascript:void(0)" onClick="CallCenterUtils.openWorkItemDetailsInPrimaryTab('{!workItem.Id}');">{!workItem.name}</a>
+                        </td>
+                        
+                        <td>{!workItem.Work_Item_Type__c}</td>
+                        
+                        <td>{!workItem.Delivery_Mode__c}</td>
+                        
+                        <td>{!workItem.Status__c}</td>
+                        
+                    </tr>
+                    
+                </apex:repeat>
+            </tbody>
+            
+        </table>
+    </div>
+</apex:page>

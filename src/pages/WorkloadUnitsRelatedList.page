@@ -1,0 +1,21 @@
+<apex:page standardController="Workload__c" docType="html-5.0" standardStylesheets="true">
+
+<head>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no"/> 
+</head>
+	
+	<script>
+		$(function() {
+			//alert('workload lookup = 00No00000069JgV');
+			//alert('{!Workload__c.Id}');
+			if( (typeof sforce != 'undefined') && (sforce != null) ) {
+				//sforce.one.navigateToSObject('{!Workload__c.Id}', 'related'); Not working, known issue https://success.salesforce.com/issues_view?id=a1p30000000T3pcAAC
+				sforce.one.navigateToRelatedList('00No00000069JgV', '{!Workload__c.Id}');
+			}
+		});
+
+
+	</script>
+	
+</apex:page>

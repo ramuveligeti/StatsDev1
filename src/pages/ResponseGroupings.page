@@ -1,0 +1,46 @@
+<apex:page standardController="Response__c">
+	<apex:pageBlock >
+    	<apex:pageBlockSection >
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_1_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_1_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_1__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_2_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_2_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_2__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_3_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_3_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_3__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_4_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_4_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_4__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_5_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_5_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_5__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_6_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_6_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_6__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_7_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_7_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_7__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_8_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_8_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_8__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_9_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_9_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_9__c}"/>
+            </apex:pageBlockSectionItem>
+        	<apex:pageBlockSectionItem rendered="{!Response__c.GR_10_Label__c!= NULL}">
+            	<apex:outputLabel >{!Response__c.GR_10_Label__c}</apex:outputLabel>
+                <apex:outputField value="{!Response__c.GR_10__c}"/>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>

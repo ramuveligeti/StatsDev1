@@ -1,0 +1,64 @@
+<apex:page standardController="Skillset__c" extensions="AlterSkillsetForUserCon">
+    <c:LoadingWindow />
+    <apex:form id="SkillsetForm">
+        <apex:pageMessages id="pageMessages"/>
+        <apex:pageBlock title="Alter Skillsets">
+            <div style="width:50%; margin:0 auto;">
+                <apex:outputpanel >
+                    <apex:actionRegion >
+                        <apex:outputLabel style="font-weight:bold">Select a User </apex:outputLabel>
+                        <apex:outputpanel style="padding:5px"></apex:outputpanel>
+                        <apex:outputpanel style="padding:3px" styleClass="requiredInput">
+                            <apex:outputpanel styleClass="requiredBlock"></apex:outputpanel>
+                            <apex:inputField value="{!Skillset__c.User_Name__c}"/>
+                        </apex:outputpanel>
+                        <apex:outputpanel style="padding:5px"></apex:outputpanel>
+                        <apex:commandButton value="Search" action="{!queryRelatedSkills}" reRender="SkillsetForm" status="loadStatus"/>
+                        <apex:outputpanel style="padding:1px"></apex:outputpanel>
+                        <apex:commandButton value="Cancel" action="{!cancel}" rendered="{! !displayList}" reRender="SkillsetForm" status="loadStatus"/>
+                    </apex:actionRegion>
+                </apex:outputpanel>
+            </div>
+        </apex:pageBlock>
+        <apex:pageBlock rendered="{!displayList}" id="SkillsetList">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Assign a new skill" action="{!assignNewSkill}" reRender="SkillsetList,pageMessages" status="loadStatus"/>
+                <apex:commandButton value="Save" action="{!save}" status="loadStatus" reRender="pageMessages" rendered="{!displaySave}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}" onclick="return window.confirm('Any changes made will not be saved. Are you sure?');" status="loadStatus"/>
+            </apex:pageBlockButtons>
+            <apex:variable value="{!0}" var="rowNum"/>
+            <apex:pageBlockTable value="{!skillsets}" var="skill" id="skillsTable">
+                <apex:column headerValue="Action">
+                    <apex:actionRegion >
+                        <apex:commandLink value="Delete" action="{!deleteSkillset}" reRender="SkillsetList,pageMessages" onclick="if (!confirm('Are you sure?')) return;" rendered="{!skill.Id != null}" status="loadStatus">
+                            <apex:param name="removeId" value="{!skill.Id}" assignTo="{!removeId}"/>
+                            <apex:param name="removeListId" value="{!rowNum}" assignTo="{!removeListId}"/>
+                        </apex:commandLink>                
+                        <apex:commandLink value="Delete" action="{!deleteSkillset}" reRender="SkillsetList,pageMessages" onclick="if (!confirm('Are you sure?')) return;" rendered="{!skill.Id == null}" status="loadStatus">
+                            <apex:param name="removeListId" value="{!rowNum}" assignTo="{!removeListId}"/>
+                        </apex:commandLink>                
+                        <apex:variable var="rowNum" value="{!rowNum+1}"/>
+                    </apex:actionRegion>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.Skillset__c.fields.Collection__c.label}">
+                    <apex:outputField value="{!skill.Collection__c}" rendered="{!skill.Id != null}"/>
+                    <apex:inputField value="{!skill.Collection__c}" rendered="{!skill.Id == null}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.Skillset__c.fields.Skill__c.label}">
+                    <apex:outputField value="{!skill.Skill__c}" rendered="{!skill.Id != null}"/>
+                    <apex:inputField value="{!skill.Skill__c}" rendered="{!skill.Id == null}" required="true"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.Skillset__c.fields.Training_Completion_Date__c.label}">
+                    <apex:outputField value="{!skill.Training_Completion_Date__c}" rendered="{!skill.Id != null}"/>
+                    <apex:inputField value="{!skill.Training_Completion_Date__c}" rendered="{!skill.Id == null}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.Skillset__c.fields.Focus_Start_Date__c.label}">
+                    <apex:inputField value="{!skill.Focus_Start_Date__c}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.Skillset__c.fields.Focus_End_Date__c.label}">
+                    <apex:inputField value="{!skill.Focus_End_Date__c}"/>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

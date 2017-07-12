@@ -1,0 +1,48 @@
+<!--apex:page standardController="Unit__c" extensions="ViewResponsesExCon" readOnly="true">
+    <script src="{!$Resource.jQueryTableSorter}/tableSorter/jquery-1.11.3.js"></script>
+    <script src="{!$Resource.jQueryTableSorter}/tableSorter/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{!$Resource.jQueryTableSorter}/tableSorter/jquery-latest.js"></script>
+    <script type="text/javascript" src="{!$Resource.jQueryTableSorter}/tableSorter/jquery.tablesorter.js"></script> 
+
+    <script type="text/javascript">
+    j$ = jQuery.noConflict();
+    j$(document).ready(function(){ 
+        j$("table[id$=responseList]").tablesorter( {dateFormat: 'uk', sortList: [[12,1]]} );
+    });    
+    </script>
+    <style>
+        table.tablesorter thead tr th.header { 
+        cursor: pointer !important; 
+        font-weight: bold !important; 
+        background-repeat: no-repeat !important; 
+        background-position: center right !important; 
+        margin-left: -1px !important; 
+        } 
+        table.tablesorter thead tr th.headerSortUp { 
+        background-image: url("{!URLFOR($Resource.jQueryTableSorter,'tableSorter/themes/blue/asc.gif')}") !important; 
+        background-color: #cfeef8 !important; 
+        } 
+        table.tablesorter thead tr th.headerSortDown { 
+        background-image: url("{!URLFOR($Resource.jQueryTableSorter,'tableSorter/themes/blue/desc.gif')}") !important; 
+        background-color: #cfeef8 !important; 
+        }     
+    </style>
+    <apex:pageBlock >
+        <apex:pageBlockTable value="{!responseObj}" var="response" id="responseList" styleClass="tablesorter">
+            <apex:column value="{!response.Unit_of_Interest__c}"/>
+            <apex:column value="{!response.Unit_of_Interest__r.Unit_of_Interest_ID__c}"/>
+            <apex:column value="{!response.Unit_of_Interest__r.Unit_of_Interest_Description__c}"/>
+            <apex:column value="{!response.Unit_of_Interest__r.Group_Top_Enterprise__c}"/>
+            <apex:column value="{!response.Unit_of_Interest__r.Enterprise__c}"/>
+            <apex:column value="{!response.Collection_Instance__r.Name}"/>
+            <apex:column value="{!response.Instrument__r.Name}"/>
+            <apex:column value="{!response.Collection_Mode__c}"/>
+            <apex:column value="{!response.Key__c}"/>
+            <apex:column headerValue="Contact" value="{!response.Contact__r.FirstName} {!response.Contact__r.LastName}"/>
+            <apex:column value="{!response.Status__c}"/>
+            <apex:column value="{!response.Extension_Date__c}"/>
+            <apex:column value="{!response.CreatedDate}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock-->
+    <apex:page >
+</apex:page>

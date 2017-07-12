@@ -1,0 +1,19 @@
+<apex:page controller="ExtractSchedulerCon">
+    <apex:form id="extSch">
+        <apex:pageBlock title="Extract Scheduler">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+            	<apex:commandButton action="{!save}" value="Save" reRender="extSch"/>
+                <apex:commandbutton action="{!cancel}" value="Cancel" immediate="true" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection >
+                <apex:inputField value="{!actSch.Delivery_Mode__c}" required="true"/>
+                <apex:inputField value="{!actSch.Work_Item_Type__c}" required="true"/>
+                <apex:inputField value="{!actSch.Output_CSV_Format__c}" required="true"/>
+                <apex:inputField value="{!actSch.Frequency__c}" required="true"/>
+                <apex:inputField value="{!actSch.Occurrence__c}" required="true"/>
+                <apex:inputField value="{!actSch.Scheduled_Date_time__c}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

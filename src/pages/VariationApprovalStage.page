@@ -1,0 +1,6 @@
+<apex:page standardController="Project_Variation__c">
+    <c:SP_Process labels="['Application Received','Application Started','Initial Approvals Completed','Variation Completed','Variation Rejected','On hold','Variation Cancelled']"
+        shortlabels="['AR','AS','IA','VC','VR','OH','C']" 
+        selected="{!Project_Variation__c.Status__c}"
+    />
+</apex:page>

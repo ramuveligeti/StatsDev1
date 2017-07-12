@@ -1,0 +1,86 @@
+<!--
+/**
+* @description This Page is invoked through Extract CSV from Work Items button
+* @author Ram Veligeti
+* @date 21.Apr.2015
+*/
+-->
+
+<apex:page standardController="Collection_Instance__c" extensions="ExtractWorkItemsActivitiesExCon">
+    <style>
+        *{font-size:9pt;}
+        .activeTab {background-color: #236FBD; color:white !important; background-image:none;font-size:9pt;}
+        .inactiveTab { background-color: lightgrey; color:black !important; background-image:none;font-size:9pt;}
+        .disabledtab { background-color: lightgrey; color:darkgray !important; background-image:none;font-size:9pt;}
+    </style>
+    <c:LoadingWindow />
+    <apex:outputPanel id="hiddenFields" rendered="false">
+        {!Collection_Instance__c.Collection__r.Name}
+        {!Collection_Instance__c.Collection__c}
+        {!Collection_Instance__c.RecordType.Name}
+    </apex:outputPanel>
+    <apex:tabPanel activeTabClass="activeTab" inactiveTabClass="inactiveTab" disabledTabClass="disabledtab" switchType="client">
+        <apex:tab label="Ad-hoc Extract" >
+            <apex:form id="AdHocExtractCsvForm">
+                <apex:pageBlock id="ExtractCSVBlock1" >
+                    <apex:pageMessages id="ShowMsg1"></apex:pageMessages>
+                    <apex:pageBlockButtons >
+                        <apex:commandButton action="{!extractCSV}" rendered="{!displayExtractCsvButton}" value="Extract CSV" status="loadStatus" reRender="ShowMsg1,AsyncJob1,ExtractCSVBlock1"/>
+                        <apex:commandButton action="{!cancel}" value="Cancel" rendered="{!asyncJobId == NULL}"/>
+                        <apex:commandButton action="{!cancel}" value="Close" rendered="{!asyncJobId != NULL}"/>
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection rendered="{!displayExtractCsvButton}" >
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Delivery_Mode__c.label}"/>
+                            <apex:actionRegion >
+                                <apex:inputField value="{!activitySchedule.Delivery_Mode__c}" required="true"/>
+                            </apex:actionRegion>
+                        </apex:pageBlockSectionItem>
+                        <apex:inputfield value="{!activitySchedule.Work_Item_Type__c}" required="true" />
+                        <apex:inputField value="{!activitySchedule.Output_CSV_Format__c}" required="true"/>
+                        <apex:inputfield value="{!activitySchedule.Frequency__c}" required="true" />
+                        <apex:inputfield value="{!activitySchedule.Occurrence__c}" required="true" />
+                        <apex:inputfield value="{!activitySchedule.Scheduled_Date_time__c}" required="true" />
+                        <apex:inputField value="{!Collection_Instance__c.Collection__c}"/>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form>
+            <apex:outputPanel id="AsyncJob1">
+                <c:AsyncJobStatus rendered="{!asyncJobId != NULL}" AsyncJobId="{!asyncJobId}"/>
+            </apex:outputPanel>
+        </apex:tab>
+    	<apex:tab label="Activity Extract" >
+            <apex:form id="ActivityScheduleExtractForm">
+                <apex:pageBlock id="ExtractCSVBlock" >
+                    <apex:pageMessages id="ShowMsg"></apex:pageMessages>
+                    <apex:pageBlockButtons >
+                        <apex:commandButton action="{!extractCSV}" rendered="{!displayExtractCsvButton}" value="Extract CSV" status="loadStatus" reRender="ShowMsg,AsyncJob,ExtractCSVBlock"/>
+                        <apex:commandButton action="{!cancel}" value="Cancel" rendered="{!asyncJobId == NULL}"/>
+                        <apex:commandButton action="{!cancel}" value="Close" rendered="{!asyncJobId != NULL}"/>
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection rendered="{!displayExtractCsvButton}" >
+                        <apex:pageBlockSectionItem helpText="Select the activity-schedule that was used to create the work items">
+                            <apex:outputLabel value="Activity Schedule" for="f_actsch" />
+                            <apex:outputPanel >
+                                <div class = "requiredInput">
+                                    <div class = "requiredBlock"></div>
+                                    <apex:selectList value="{!selectActSchId}" multiselect="false" size="1" required="true">
+                                        <apex:selectOptions value="{!schedules}" />
+                                    </apex:selectList>
+                                </div>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:inputField value="{!activitySchedule.Output_CSV_Format__c}" required="true"/>
+                        <apex:inputfield value="{!activitySchedule.Frequency__c}" required="true" />
+                        <apex:inputfield value="{!activitySchedule.Occurrence__c}" required="true" />
+                        <apex:inputfield value="{!activitySchedule.Scheduled_Date_time__c}" required="true" />
+                        <apex:inputField value="{!Collection_Instance__c.Collection__c}"/>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form>
+            <apex:outputPanel id="AsyncJob">
+                <c:AsyncJobStatus rendered="{!asyncJobId != NULL}" AsyncJobId="{!asyncJobId}"/>
+            </apex:outputPanel>
+        </apex:tab>
+    </apex:tabPanel>
+</apex:page>

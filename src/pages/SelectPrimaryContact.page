@@ -1,0 +1,26 @@
+<apex:page showHeader="true" sidebar="true" controller="SelectPrimaryContactCtrl" action="{!checkForPrimaryContact}">
+	<apex:form >
+		<apex:pageBlock title="Set new primary contact">
+			<apex:pageMessages />
+			<apex:pageBlockButtons rendered="{!isValid}">
+				<apex:commandButton value="Save" action="{!savePrimaryContact}" />
+				<apex:commandButton value="Skip" action="{!cancel}" />
+			</apex:pageBlockButtons>
+
+			<apex:pageBlockSection columns="1" rendered="{!isValid}">
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="Unit:" />
+					<a href="/{!unit.Id}">{!unit.Name}</a>
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="Collection:" />
+					<a href="/{!collection.Id}">{!collection.Name}</a>
+				</apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+				
+			<apex:selectRadio value="{!primaryContactRoleId}" layout="pageDirection" rendered="{!isValid}">
+				<apex:selectOptions value="{!contactRolesSO}"/>
+			</apex:selectRadio>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

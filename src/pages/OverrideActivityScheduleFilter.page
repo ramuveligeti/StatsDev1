@@ -1,0 +1,3 @@
+<apex:page standardController="Activity_Schedule_Filter__c" extensions="OverrideActivityScheduleFilterExCon" action="{!IF(redirect.url== NULL, urlFor($Action.Activity_Schedule_Filter__c.Edit, Activity_Schedule_Filter__c.id, [retURL=Activity_Schedule_Filter__c.id], true), redirect.url)}">
+    {!Activity_Schedule_Filter__c.Collection__c}
+</apex:page>

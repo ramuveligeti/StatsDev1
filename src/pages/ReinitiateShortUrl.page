@@ -1,0 +1,63 @@
+<apex:page standardController="Collection_Instance__c" extensions="ReinitiateShortUrlController" >
+<apex:outputPanel rendered="false">
+{!Collection_Instance__c.Short_URL_Request_Timestamp__c} {!Collection_Instance__c.Name}
+{!Collection_Instance__c.Collection__c} {!Collection_Instance__c.Collection__r.Name}
+{!Collection_Instance__c.Collection__r.Collection_Code__c}
+</apex:outputPanel>
+<c:LoadingWindow /> 
+<apex:form >
+
+<!-- not an online survey -->
+	<apex:pageBlock rendered="{! !onlineSurvey || emptyCollection}">
+		<apex:pageblockbuttons location="top">
+			<apex:commandButton value="Cancel" action="{!backToCollectionInstance}" />
+		</apex:pageblockbuttons>
+		<apex:outputPanel >
+			<apex:outputText rendered="{! !onlineSurvey}" style="color:red;" value="This is not an online survey.  Click cancel to continue." /><br/>
+			<apex:outputText rendered="{! emptyCollection}" style="color:red;" value="Collection instance is empty, load the sample first.  Click cancel to continue."/><br/>
+		</apex:outputPanel>
+	</apex:pageBlock>
+
+	<apex:outputPanel layout="none" rendered="{! onlineSurvey && !emptyCollection}">
+<!-- shorturl has been populated to all the responses, nothing to do -->
+	<apex:pageBlock rendered="{! notAllowed}">
+		<apex:pageblockbuttons location="top">
+			<apex:commandButton value="Cancel" action="{!backToCollectionInstance}" />
+		</apex:pageblockbuttons>
+		<apex:outputPanel >
+			<apex:outputText value="Short urls have already been populated for this collection.  Click cancel to continue."/><br/>
+		</apex:outputPanel>
+	</apex:pageBlock>
+
+<!-- shorturl has not been submitted successfully, and none of the responses has short-urls -->
+	<apex:pageBlock rendered="{! goodToGo}">
+		<apex:pageblockbuttons location="top">
+			<apex:commandButton value="Initiate ShortUrl Mapping" action="{!submitShortURLRequest}" rendered="{! !submitted}"/>
+			<apex:commandButton value="{! if(submitted, 'Return to collection instance', 'Cancel') }" action="{!backToCollectionInstance}" />
+		</apex:pageblockbuttons>
+		<apex:outputPanel rendered="{!submitted}">
+			<apex:outputText value="Short urls have been requested successfully" />
+		</apex:outputPanel>
+	</apex:pageBlock>
+
+<!-- combination of situations  -->
+	<apex:pageBlock rendered="{! !goodToGo && !notAllowed}">
+		<apex:pageblockbuttons location="top">
+			<apex:commandButton value="Initiate ShortUrl Mapping" action="{!submitShortURLRequest}" rendered="{! !submitted}"/>
+			<apex:commandButton value="{! if(submitted, 'Return to collection instance', 'Cancel') }" action="{!backToCollectionInstance}" />
+		</apex:pageblockbuttons>
+		<apex:outputPanel rendered="{! !submitted}">
+			<apex:outputText rendered="{! submittedInHours>0 }" value="Short-url request was submitted successfully {!submittedInHours} hours ago." /><br/><br/>
+			<apex:outputText rendered="{! receivedShortUrl }" style="color: blue;" escape="false" value="Some short-urls are already been populated.<br/><br/>" />
+			<apex:outputText rendered="{! !receivedShortUrl }" style="color: blue;" escape="false" value="Short-urls are not yet being populated.<br/><br/>" />
+			<apex:outputText value="If you want to re-submit the short-url request, click "/><b><apex:outputText value="Initiate ShortUrl Mapping"/></b>
+			<apex:outputText value="; otherwise, you can cancel and wait to see if they will come through" /><br/>
+		</apex:outputPanel>
+		<apex:outputPanel rendered="{!submitted}">
+			<apex:outputText value="Short urls have been requested successfully." />
+		</apex:outputPanel>
+	</apex:pageBlock>
+	</apex:outputPanel>
+
+</apex:form>
+</apex:page>

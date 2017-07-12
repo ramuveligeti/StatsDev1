@@ -1,0 +1,20 @@
+<apex:page standardController="Activity_Schedule__c" extensions="CreateWorkItemsExCon" docType="html-5.0">
+    <apex:outputPanel id="hiddenFields" rendered="false">
+        {!Activity_Schedule__c.Scheduled_Date_time__c}
+        {!Activity_Schedule__c.Frequency__c}
+        {!Activity_Schedule__c.Occurrence__c}
+        {!Activity_Schedule__c.Collection_Instance__c}
+        {!Activity_Schedule__c.Collection_Instance__r.Collection__c}
+        {!Activity_Schedule__c.Collection_Instance_Name__c}
+        {!Activity_Schedule__c.Id}
+    </apex:outputPanel>
+    <apex:pageMessages id="ShowMsg"></apex:pageMessages>
+    <apex:pageBlock title="Activity Schedule">
+    	<apex:pageBlockSection >
+        	<apex:outputField value="{!Activity_Schedule__c.Scheduled_Date_time__c}"/>
+            <apex:outputField value="{!Activity_Schedule__c.Frequency__c}"/>
+            <apex:outputField value="{!Activity_Schedule__c.Occurrence__c}"/>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    <!--c:ScheduleWorkItems ActSchId="{!Activity_Schedule__c.Id}" ColInsId="{!Activity_Schedule__c.Collection_Instance__c}" ColId="{!Activity_Schedule__c.Collection_Instance__r.Collection__c}" DispContent="{!displayContent}"/-->
+</apex:page>

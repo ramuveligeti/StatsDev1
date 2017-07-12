@@ -1,0 +1,212 @@
+<apex:page standardController="Collection_Instance__c" extensions="BulkWorkItemUpdateController" docType="html-5.0">
+
+<apex:outputPanel layout="none" rendered="false">
+{!Collection_Instance__c.Name}{!Collection_Instance__c.RecordTypeId}{!Collection_Instance__c.RecordType.Name}{!Collection_Instance__c.Grouping__c}
+</apex:outputPanel>
+
+<apex:form >
+
+ <style>
+.requiredBlock {
+    display: none;
+}
+</style>
+
+ 
+<apex:pageMessages />
+<apex:pageBlock mode="detail" title="Bulk Updating Work Items" id="main">
+    <apex:pageBlockButtons location="top">
+        <apex:commandButton action="{!cancel}" value="Cancel" rendered="{!!batched}" />
+    </apex:pageBlockButtons>
+    <apex:pageBlockButtons location="bottom">
+        <apex:commandButton action="{!save}" value="Bullk Update" rendered="{!!batched}"/>
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection columns="2"  title="Filters" collapsible="false" rendered="{! !batched}">
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Collection Instance" for="f_name" />
+            <apex:outputField value="{!record.name}" id="f_name"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem />
+        
+        <!--  work item filters -->
+        <apex:pageBlockSectionItem helpText="mode of the work items to be updated">
+            <apex:outputLabel value="Delivery Mode" for="f_type" />
+            <apex:selectlist value="{!filterDM}" multiselect="true" size="5" id="f_type">
+                <apex:selectoptions value="{!dmOptions}" />
+            </apex:selectlist>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem helpText="type of the work items to be updated">
+            <apex:outputLabel value="Work Item Type" for="f_WItype" />
+            <apex:selectlist value="{!filterWIT}" multiselect="true" size="5">
+                <apex:selectoptions value="{!witOptions}" />
+            </apex:selectlist>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem helpText="current status of the work items">
+            <apex:outputLabel value="Work Item Status" for="f_status" />
+            <apex:selectlist value="{!filterWIS}" multiselect="true" size="3">
+                <apex:selectoptions value="{!wisOptions}" />
+            </apex:selectlist>
+        </apex:pageBlockSectionItem>
+        <apex:pageblocksectionitem helptext="only select work items with the associated Instrument codes">
+            <apex:outputlabel value="Instrument Code" for="f_InsCodes" />
+            <apex:selectlist value="{!filterIC}" multiselect="true" size="3">
+                <apex:selectoptions value="{!instrumentCodes}" />
+            </apex:selectlist>
+        </apex:pageblocksectionitem>
+        <apex:pageBlockSectionItem helpText="include/exclude the follow-up, leave 'none' for non-applicable">
+            <apex:outputLabel value="Follow up?" for="f_fu" />
+            <apex:selectList value="{!filterFU}" multiselect="false" size="1">
+                <apex:selectOptions value="{!yesno}"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+        <apex:pageblocksectionitem helptext="include/exclude the escalated work items, leave 'none' for non-applicable">
+            <apex:outputlabel value="Escalated?" for="f_es" />
+            <apex:selectlist value="{!filterES}" multiselect="false" size="1">
+                <apex:selectoptions value="{!yesno}" />
+            </apex:selectlist>
+        </apex:pageblocksectionitem>
+        <apex:pageblocksectionitem helptext="filter on owner of work item">
+            <apex:outputlabel value="Select owner" for="f_owner" />
+            <apex:inputfield value="{!dummyFilter.OwnerId}" id="f_owner" required="false"/>
+        </apex:pageblocksectionitem>
+        <apex:pageblocksectionitem />
+        <apex:pageblocksectionitem helptext="filter on call back datetime from">
+            <apex:outputlabel value="CallBack Date From" />
+            <apex:inputfield value="{!dummyWI_StartDate.Call_Back_Time__c}" />
+        </apex:pageblocksectionitem>
+        <apex:pageblocksectionitem helptext="filter on call back datetime to" >
+            <apex:outputlabel value="CallBack Date To" />
+            <apex:inputfield value="{!dummyWI_EndDate.Call_Back_Time__c}" />
+        </apex:pageblocksectionitem>
+
+        <!--  census filter -->
+        <apex:pageBlockSectionItem rendered="{!isCensus}" helpText="choose which workload you would like to update">
+            <apex:outputLabel value="Workload" for="f_workload" />
+            <apex:inputField value="{!dummyFilter.Workload__c}" id="f_workload"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem rendered="{!isCensus}" helpText="filter on response summary status">
+            <apex:outputLabel value="Response Summary Status" for="f_sumstatus" />
+            <apex:inputField value="{!dummyRFilter.Response_Summary_Status__c}" id="f_sumstatus"/>
+        </apex:pageBlockSectionItem>
+        
+        <!--  response filters -->
+        <apex:pageblocksectionitem helptext="only select work items with the associated Collection mode">
+            <apex:outputlabel value="Collection Mode" for="f_cMode" />
+            <apex:inputfield value="{!dummyRFilter.Collection_Mode__c}" id="f_cMode" />
+        </apex:pageblocksectionitem>
+        
+        <apex:pageBlockSectionItem helpText="Select the associated Response status">
+            <apex:outputLabel value="Response Status" for="f_resstatus" />
+            <apex:inputField value="{!dummyRFilter.Status__c}" id="f_resstatus"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem helpText="include/exclude work items that are belonging to Key responses, leave 'none' for non-applicable">
+            <apex:outputLabel value="Key Response?" for="f_key"/>
+            <apex:selectList value="{!filterKey}" multiselect="false" size="1">
+                <apex:selectOptions value="{!yesno}"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+        <apex:pageblocksectionitem helptext="only select work items with this wave">
+            <apex:outputlabel value="Response Wave" for="f_wave" />
+            <apex:selectlist value="{!filterWave}" multiselect="false" size="1" id="f_wave">
+                <apex:selectoptions value="{!waveOptions}" />
+            </apex:selectlist>
+        </apex:pageblocksectionitem>
+        <apex:pageblocksectionitem helptext="only select work items with the associated Overall Priority Factor">
+            <apex:outputlabel value="Overall Priority Factor" for="f_opf" />
+            <apex:selectlist value="{!filterOpf}" multiselect="false" size="1" id="f_opf">
+                <apex:selectoptions value="{!opfOptions}" />
+            </apex:selectlist>
+        </apex:pageblocksectionitem>
+        <apex:pageblocksectionitem helptext="only select work items with the associated Overall Priority Override">
+            <apex:outputlabel value="Overall Priority Override" for="f_opo" />
+            <apex:selectlist value="{!filterOpo}" multiselect="false" size="1" id="f_opo">
+                <apex:selectoptions value="{!yesno}" />
+            </apex:selectlist>
+        </apex:pageblocksectionitem>
+        <apex:pageblocksectionitem />
+        <apex:pageblocksectionitem />
+ 
+        <!--  unit filters -->
+        <apex:pageBlockSectionItem helpText="include/exclude LBU units, leave 'none' for non-applicable">
+            <apex:outputLabel value="LBU?" for="f_lbu" />
+            <apex:selectList value="{!filterLBU}" multiselect="false" size="1">
+                <apex:selectOptions value="{!yesno}"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+
+        <!--  activity Schedule filter -->
+        <apex:pageBlockSectionItem helpText="Select the activity-schedule that was used to create the work items">
+            <apex:outputLabel value="Activity Schedule" for="f_actsch" />
+            <apex:selectList value="{!filterAS}" multiselect="true" size="2">
+                <apex:selectOptions value="{!schedules}"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+        
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Extension Date From" />
+            <apex:inputField value="{!dummyResponse_StartDate.Extension_Date__c}"/>
+        </apex:pageBlockSectionItem>
+        
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Extension Date To" />
+            <apex:inputField value="{!dummyResponse_EndDate.Extension_Date__c}"/>
+        </apex:pageBlockSectionItem>
+
+        <apex:repeat value="{!groupingWraps}" var="groupingWrap">
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="{!groupingWrap.label}"/>
+                <apex:selectList value="{!groupingWrap.selectedOption}" multiselect="true" size="5">
+                    <apex:selectOptions value="{!groupingWrap.options}"/>
+                </apex:selectList>
+            </apex:pageBlockSectionItem>
+        </apex:repeat>
+
+        
+    </apex:pageBlockSection>
+
+    <apex:pageBlockSection columns="2" title="Updating to...." collapsible="false" rendered="{! !batched}">
+        <apex:pageBlockSectionItem helpText="Update all qualified work items to this status">
+            <apex:outputLabel value="New Work Item Status" for="i_status" />
+            <apex:selectList value="{!inputStatus}" multiselect="false" size="1">
+                <apex:selectOptions value="{!outcomes}"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+        <apex:pageblocksectionitem helptext="Update all qualified work items to this callback time">
+            <apex:outputlabel value="New callback time" for="i_callback" />
+            <apex:inputfield value="{!dummyWI_InputCallBackTime.Call_Back_Time__c}" />
+        </apex:pageblocksectionitem>
+        <apex:pageBlockSectionItem helpText="Update all qualified work items to this user">
+            <apex:outputLabel value="Assign to this User" for="i_user" />
+            <apex:selectList value="{!inputUser}" multiselect="false" size="1">
+                <apex:selectOptions value="{!activeUsers}"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem helpText="Update all qualified work items to this queue">
+            <apex:outputLabel value="Assign to this Queue" for="i_queue" />
+            <apex:selectList value="{!inputQueue}" multiselect="false" size="1">
+                <apex:selectOptions value="{!activeQueues}"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem helpText="{!$ObjectType.Response__c.fields.Overall_Priority_Factor__c.inlineHelpText}">
+            <apex:outputLabel value="{!$ObjectType.Response__c.fields.Overall_Priority_Factor__c.Label}"/>
+            <apex:inputText value="{!priorityFactorInput}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageblocksectionitem helptext="{!$ObjectType.Response__c.fields.Overall_Priority_Override__c.inlineHelpText}">
+            <apex:outputlabel value="{!$ObjectType.Response__c.fields.Overall_Priority_Override__c.Label}" />
+            <apex:selectlist value="{!inputPriorityOverride}" multiselect="false" size="1">
+                <apex:selectoptions value="{!yesno}" />
+            </apex:selectlist>
+        </apex:pageblocksectionitem>
+    </apex:pageBlockSection>
+
+
+<apex:outputPanel layout="none" id="results">
+    <apex:pageBlockSection columns="1" title="Results" collapsible="false" rendered="{!batched}">
+    Batch Job: {!batchId}, has been scheduled successfully.  Go back to <a href="/{!Collection_Instance__c.id}">{!Collection_Instance__c.Name}</a>
+    </apex:pageBlockSection>
+</apex:outputPanel>
+
+</apex:pageBlock>
+
+</apex:form>
+</apex:page>

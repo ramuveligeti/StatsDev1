@@ -1,0 +1,36 @@
+<apex:page standardController="Collection_Instance__c"
+	extensions="SpecialArrangementProcessor" action="{!init}">
+<apex:messages />
+<apex:outputPanel rendered="false">
+{!Collection_Instance__c.Collection_Period__c}{! Collection_Instance__c.Reference_Period__c}
+{! Collection_Instance__c.Return_Date__c}{! Collection_Instance__c.Collection__c}
+{!Collection_Instance__c.Actual_Start_Date__c} {!Collection_Instance__c.Name}
+{!Collection_Instance__c.Planned_Start_Date__c} {!Collection_Instance__c.Extension_Cut_off_Date__c}
+</apex:outputPanel>
+
+<c:LoadingWindow />
+
+<apex:form >
+<apex:pageBlock >
+<apex:pageBlockButtons location="top">
+	<apex:commandButton value="Execute Special Arrangements" action="{!startProcessing}" status="loadStatus" rendered="{! validated&&!processed}"/>
+	<apex:commandButton value="{! if(processed, 'Return to collection instance','Cancel') }" action="{!returnToCollectionInstance}" />
+</apex:pageBlockButtons>
+<apex:outputPanel rendered="{! !validated}">
+	<apex:outputText >{!errorMsg}</apex:outputText>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!processed}">
+	<apex:outputText ><p>Special Arrangements have been processed.</p></apex:outputText>
+	<apex:outputPanel layout="none" rendered="{! hasError}">
+	<apex:outputText ><p>Except for the following</p></apex:outputText>	
+		<apex:pageBlockTable title="Processing Errors" value="{! errors }" var="err">
+			<apex:column headerValue="Special Arrangement Link"><apex:outputLink target="_" value="/{!err.ruleId}">{!err.ruleName}</apex:outputLink></apex:column>
+			<apex:column headerValue="Response Link"><apex:outputLink target="_" value="/{!err.recordId}">{!err.recordName}</apex:outputLink></apex:column>
+			<apex:column value="{!err.errorMessage}" headerValue="Error Message"></apex:column>
+		</apex:pageBlockTable>
+	</apex:outputPanel>
+</apex:outputPanel>
+
+</apex:pageBlock>
+</apex:form>	
+</apex:page>

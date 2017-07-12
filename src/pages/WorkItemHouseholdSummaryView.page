@@ -1,0 +1,19 @@
+<apex:page standardcontroller="Work_Item__c" extensions="WorkItemHouseholdSummaryViewExCon">
+    <apex:outputPanel rendered="false">
+        {!Work_Item__c.Unit_Id__c}
+        {!Work_Item__c.Response__r.Wave__c}
+        {!Work_Item__c.Response__r.RecordTypeId}
+    </apex:outputPanel>
+    <apex:pageBlock >
+        <apex:pageblocktable value="{!personalQuestionnaires}" var="pq">
+            <apex:column headerValue="Response Number">
+                <apex:outputlink value="javascript:srcUp('/{!pq.Id}?isdtp=vw');">{!pq.Name}</apex:outputlink>
+            </apex:column>
+            <apex:column headerValue="Contact">
+                <apex:outputlink value="javascript:srcUp('/{!pq.Contact__c}?isdtp=vw');">{!pq.Contact__r.Name}</apex:outputlink>
+            </apex:column>
+            <apex:column value="{!pq.Status__c}"/>
+            <apex:column value="{!pq.Response_Status_Reason__c}" />
+        </apex:pageblocktable>
+    </apex:pageBlock>
+</apex:page>

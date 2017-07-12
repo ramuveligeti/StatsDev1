@@ -1,0 +1,6 @@
+<apex:page standardController="Work_Item__c">
+    <c:SP_Process labels="['New','In Progress','Pending','Completed','Closed']"
+        shortlabels="['N','IP','P','C','CO']" 
+        selected="{!Work_Item__c.Status__c}"
+    />
+</apex:page>

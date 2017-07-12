@@ -1,0 +1,73 @@
+<apex:page standardController="Work_Item__c" extensions="RecordOutcomesNewExCon" action="{!agentIsWritingOutcomes}" sidebar="false" showHeader="false">
+    <apex:outputPanel rendered="false">
+    	{!Work_Item__c.Response__r.Unit_of_Interest__r.LBU__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.Assigned__c}
+        {!Work_Item__c.Response__c}
+        {!Work_Item__c.Contact__r.Assigned__c}
+        {!Work_Item__c.Contact__r.Notes__c}
+        {!Work_Item__c.Response__r.Contact__c}
+        {!Work_Item__c.Approval_Status__c}
+        {!Work_Item__c.Name}
+    </apex:outputPanel>
+    <apex:form id="OutcomesForm">
+        <c:LoadingWindow />
+    	<apex:pageBlock title="Record Outcomes">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandbutton action="{!save}" value="Save" rendered="{!displayRO}" status="loadStatus" rerender="OutcomesForm" />
+                <apex:commandButton action="{!cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:pageblocksection rendered="{!displayRO}" id="DisplayBlock" columns="1">
+                <apex:outputfield value="{!Work_Item__c.Delivery_Mode__c}" />
+                <apex:outputfield value="{!Work_Item__c.Work_Item_Type__c}" />
+                <apex:outputfield value="{!Work_Item__c.Response__r.Collection_Instance__r.Extension_Cut_off_Date__c}" />
+                <apex:outputfield value="{!Work_Item__c.Response_Extension_Date__c}" />
+            </apex:pageblocksection>
+            <apex:pageblocksection rendered="{!displayRO}" id="ContactsBlock" columns="1">
+                <apex:inputfield value="{!wi.Contact__c}" onchange="getContactNotes();">
+                    <apex:actionfunction action="{!fetchContactNotes}" name="getContactNotes" rerender="ContactsBlock" status="loadStatus" />
+                </apex:inputfield>
+                <apex:pageblocksectionitem id="ContactNotesSection">
+                    <apex:outputlabel value="Contact Notes" />
+                    <apex:inputtextarea value="{!contactNotes}" cols="100" rows="5" />
+                </apex:pageblocksectionitem>
+            </apex:pageblocksection>
+            <apex:pageblocksection rendered="{!displayRO}" id="UnitsBlock" columns="1">
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Unit Notes" />
+                    <apex:inputtextarea value="{!Work_Item__c.Response__r.Unit_of_Interest__r.Notes__c}" cols="100" rows="5" />
+                </apex:pageblocksectionitem>
+            </apex:pageblocksection>
+            <apex:pageblocksection rendered="{!displayRO}" id="OutcomesBlock" columns="1">
+                <apex:pageblocksectionitem id="outcome">
+                    <apex:outputlabel >Outcomes</apex:outputlabel>
+                    <apex:actionregion >
+                        <apex:actionfunction action="{!setCallback}" name="callBack" rerender="OutcomesBlock,newCallBack" status="loadStatus" />
+                        <apex:selectlist value="{!taskObj.Outcome__c}" multiselect="false" size="1" onchange="callBack();">
+                            <apex:selectoptions value="{!outcomes}" />
+                        </apex:selectlist>
+                    </apex:actionregion>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem rendered="{!displayPartialData}" id="partialData">
+                    <apex:outputlabel >Partial Data</apex:outputlabel>
+                    <apex:inputcheckbox value="{!partialData}" />
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem id="extensionDate" rendered="{!renderExtesionDate}">
+                    <apex:outputlabel >Set Extension Date</apex:outputlabel>
+                    <apex:inputfield value="{!Work_Item__c.Response__r.Extension_Date__c}" required="{!extensionRequired}" rendered="{!renderExtesionDate}" />
+                </apex:pageblocksectionitem>
+                <apex:inputfield value="{!taskObj.New_Call_Back_Time__c}" id="newCallBack" required="{!callBackRequired}" rendered="{!callBackRendered}" />
+                <apex:pageblocksectionitem id="escalatoinReason" rendered="{!escalationRequired}">
+                    <apex:outputlabel >{!$ObjectType.task.fields.Escalation_Reason__c.label}</apex:outputlabel>
+                    <apex:actionregion >
+                        <apex:actionfunction action="{!setExtensionDate}" name="extension" rerender="OutcomesBlock,newCallBack,extensionDate" status="loadStatus" />
+                        <apex:inputfield value="{!taskObj.Escalation_Reason__c }" id="escalate" required="{!escalationRequired}" rendered="{!escalationRequired}" onchange="extension();" />
+                    </apex:actionregion>
+                </apex:pageblocksectionitem>              
+            </apex:pageblocksection>
+            <apex:pageblocksection rendered="{!displayRO}" id="Notes" columns="1">
+                <apex:inputtextarea value="{!taskObj.Description}" cols="100" rows="5" />
+            </apex:pageblocksection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

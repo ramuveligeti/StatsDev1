@@ -1,0 +1,97 @@
+<!--
+/**
+* @description This Page is invoked through 'Create Work Items' button on Collection Instance
+* @author Ram Veligeti
+* @date 1.Apr.2015
+*/
+-->
+
+<apex:page standardController="Collection_Instance__c" extensions="CreateWorkItemsExCon" docType="html-5.0">
+    <apex:outputPanel rendered="false">
+        {!Collection_Instance__c.RecordType.Name}
+        {!Collection_Instance__c.Collection_Instance_Code__c}
+    </apex:outputPanel>
+    <c:LoadingWindow />
+    <apex:form id="FilterForm">
+        <apex:actionFunction name="applyFiltersFunction" reRender="FilterPage" status="loadStatus"/>
+        <apex:actionFunction action="{!changeValueDataType}" name="changeValueDataTypeFunction" rerender="FilterPage" status="loadStatus">
+        	<apex:param name="firstParam" assignTo="{!sequence}" value="" />
+    	</apex:actionFunction>
+        <apex:pageBlock id="FilterPage" rendered="{!renderFilterScreen}" title="Create Work Items">
+            <apex:pageMessages id="ShowMsg"></apex:pageMessages>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!addFilter}" value="Add Filter" rendered="{!applyFilters && displayContent}" reRender="FilterPage,ShowMsg" status="loadStatus"/>
+                <apex:commandButton action="{!selectActivitySchedules}" value="Select Activities" reRender="FilterForm,ActivityScheduleForm,ShowMsg" status="loadStatus" rendered="{!displayContent}"/>
+                <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            <apex:outputPanel rendered="{!displayContent}">
+                <apex:outputLabel value="Apply Filters: " style="font-weight: bold;"/>
+                <apex:inputCheckbox value="{!applyFilters}" label="Apply Filters" onchange="applyFiltersFunction();"/>
+                <br/>
+            </apex:outputPanel>
+            <br/>
+            
+            <apex:pageBlockTable value="{!filterWrapperList}" var="fl" rendered="{!applyFilters && displayContent}" >
+                <apex:column value="{!fl.sequence}." rendered="{!applyFilterLogic}" width="1%"/>
+                <apex:column headerValue="Filter" width="10%">
+                    <apex:selectList value="{!fl.filterOption}" multiselect="false" size="1" onchange="changeValueDataTypeFunction('{!fl.sequence}');">
+                        <apex:selectOptions value="{!filters}"/>
+                    </apex:selectList>
+                </apex:column>
+                <apex:column headerValue="Operator" width="10%">
+                    <apex:selectList value="{!fl.filterOperator}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!fl.operators}"/>
+                    </apex:selectList>
+                </apex:column>
+                <apex:column headerValue="Value" width="10%">
+                    <apex:input type="date" value="{!fl.dateValue}" rendered="{!fl.dataType=='Date'}"/>
+                    <apex:input type="datetime-local" value="{!fl.datetimeValue}" rendered="{!fl.dataType=='Datetime'}"/>
+                    <apex:inputText value="{!fl.value}" rendered="{!fl.dataType=='String'}"/>
+                    <apex:inputText value="{!fl.lookupValue}" rendered="{!fl.dataType=='Lookup'}"/>
+                    <apex:inputCheckbox value="{!fl.value}" rendered="{!fl.dataType=='Boolean'}"/>
+                    <apex:selectList value="{!fl.value}" multiselect="false" size="1" rendered="{!fl.dataType=='Picklist'}">
+                        <apex:selectOptions value="{!fl.picklistOptions}"/>
+                    </apex:selectList>
+                </apex:column> 
+                <apex:column value="{!fl.andOperator}" rendered="{! !applyFilterLogic}" width="5%"/>
+                <apex:column width="5%">
+                    <apex:commandButton action="{!removeSelected}" reRender="FilterPage" value="Remove" status="loadStatus">
+                        <apex:param name="removeId" value="{!fl.uniqueId}" assignTo="{!removeId}" />
+                    </apex:commandButton>
+                </apex:column>
+            </apex:pageBlockTable>
+            <br/>
+            <apex:outputPanel rendered="{!applyFilters && displayContent}">
+                <apex:commandLink value="Add Filter Logic" action="{!applyFilterLogicMethod}" rendered="{! !applyFilterLogic}" reRender="FilterForm" status="loadStatus"/>
+                <apex:commandLink value="Clear Filter Logic" action="{!clearFilterLogicMethod}" rendered="{!applyFilterLogic}" reRender="FilterForm" status="loadStatus"/>
+                <br/>
+                <br/>
+                <apex:outputPanel rendered="{!applyFilterLogic}">
+                    <apex:outputLabel value="Filter Logic:"/>
+                    <br/>
+                    <apex:inputText value="{!filterLogic}"/>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:form id="ActivityScheduleForm">
+        <apex:pageBlock id="ActivitySchedulePage" rendered="{!!renderFilterScreen}">
+            <apex:pageMessages id="ShowMsg1"></apex:pageMessages>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!back}" value="Back" rendered="{!asyncJobId == NULL}" reRender="FilterForm,ActivityScheduleForm,AsyncJob" status="loadStatus"/>
+                <apex:commandButton action="{!createWorkItems}" value="Create Work Items" rendered="{!asyncJobId == NULL}" reRender="ActivityScheduleForm,ShowMsg1,AsyncJob" status="loadStatus"/>
+                <apex:commandButton action="{!Cancel}" value="Close"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!activityScheduleList}" var="ats">
+                <apex:column >
+                    <apex:inputCheckbox value="{!ats.selected}"/>
+                </apex:column>
+                <apex:column value="{!ats.activity.Delivery_Mode__c}"/>
+                <apex:column value="{!ats.activity.Work_Item_Type__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:outputPanel id="AsyncJob">
+        <c:AsyncJobStatus rendered="{!asyncJobId != NULL}" AsyncJobId="{!asyncJobId}"/>
+    </apex:outputPanel>
+</apex:page>

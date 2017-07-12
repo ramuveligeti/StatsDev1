@@ -1,0 +1,52 @@
+<apex:page standardController="Response__c" extensions="ResponseSummaryViewExCon" readOnly="true">
+    <apex:outputPanel id="hiddenFields" rendered="false">
+        {!Response__c.Collection_Instance__c}
+        {!Response__c.Collection_Instance__r.Name}
+        {!Response__c.Unit_of_Interest__c}
+        {!Response__c.Unit_of_Interest__r.Name}
+        {!Response__c.Survey_Unit__c}
+        {!Response__c.Unit_Association__c}
+        {!Response__c.RecordType.Name}
+        {!Response__c.Wave__c}
+        {!Response__c.Collection_Instance__r.Collection__r.Collection_Code__c}
+    </apex:outputPanel>
+    <apex:pageBlock >
+        <apex:outputPanel rendered="{!createPerm}">
+            <div style="margin-left:30%;">
+                <input value="{!buttonName}" class="btn" name="newIndividualResponse" onclick="parent.window.location.replace('{!newIndividualRecord}');" title="New Individual Response" type="button" style="padding-top: 2px;padding-right: 3px;"/>
+            </div>
+        </apex:outputPanel>
+        <br/>
+        <apex:outputText rendered="{!noRecordsFound}">No records to display</apex:outputText>
+        <apex:pageBlockTable value="{!responseWrapper}" var="respWrap" rendered="{! !noRecordsFound}">
+            <apex:column headerValue="Action">
+                <apex:outputPanel rendered="{!respWrap.editPermission}">
+                    <apex:outputLink title="{!respWrap.responseObj.Name}" onclick="parent.window.location.replace('{!respWrap.editLink}');">Edit</apex:outputLink> 
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!respWrap.deletePermission}">
+                    | <apex:outputLink value="{!URLFOR($Action.Response__c.Delete,respWrap.responseObj.Id,[retURL='/'&Response__c.Id])}" title="{!respWrap.responseObj.Name}" onclick="return window.confirm('Are you sure?');">Del</apex:outputLink>
+                </apex:outputPanel>
+            </apex:column>
+            <apex:column headerValue="{!$ObjectType.Response__c.fields.Name.label}">
+                <apex:outputLink value="{!URLFOR($Action.Response__c.View,respWrap.responseObj.id)}" onclick="parent.window.location.replace('/{!respWrap.responseObj.id}');">
+                    {!respWrap.responseObj.Name}
+                </apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="{!$ObjectType.Response__c.fields.Collection_Instance__c.label}">
+                <apex:outputLink value="{!URLFOR($Action.Collection_Instance__c.View,respWrap.responseObj.Collection_Instance__c)}" onclick="parent.window.location.replace('/{!respWrap.responseObj.Collection_Instance__c}');">
+                    {!respWrap.responseObj.Collection_Instance__r.Name}
+                </apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="{!$ObjectType.Response__c.fields.Unit_of_Interest__c.label}">
+                <apex:outputLink value="{!URLFOR($Action.Unit__c.View,respWrap.responseObj.Unit_of_Interest__c)}" onclick="parent.window.location.replace('/{!respWrap.responseObj.Unit_of_Interest__c}');">
+                    {!respWrap.responseObj.Unit_of_Interest__r.Name}
+                </apex:outputLink>
+            </apex:column>
+            <apex:column value="{!respWrap.responseObj.Status__c}"/>
+            <apex:column headerValue="Record Type">
+                {!respWrap.responseObj.RecordType.Name}
+            </apex:column>
+            <apex:column value="{!respWrap.responseObj.Document_Number__c}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

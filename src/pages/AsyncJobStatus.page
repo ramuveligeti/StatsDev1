@@ -1,0 +1,53 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <apex:remoteObjects >
+        <!--Name the field you like to query-->
+        <apex:remoteObjectModel name="AsyncApexJob" jsShorthand="Async" fields="Id,MethodName,JobType,JobItemsProcessed,NumberOfErrors,Status,TotalJobItems,ExtendedStatus"/>
+    </apex:remoteObjects>
+    <script>
+    var fetchAsyncJobs = function(){
+        // Create a new Remote Object
+        var async = new SObjectModel.Async();
+        
+        async.retrieve(
+            {
+                where: {
+                    Status:{
+                        ne: 'Completed'
+                    }
+                }, 
+                limit: 10 
+            }, 
+            
+            function(err, records, event){
+                if(err) {
+                    alert(err.message);
+                }
+                else {
+                    var ul = document.getElementById("asyncJobList");
+                    records.forEach(function(record) {
+                        var asText = record.get("MethodName");
+                        asText += " -- ";
+                        asText += record.get("JobType");
+                        asText += " -- ";
+                        asText += record.get("Status");
+                        
+                        // Add the line item to the Async list
+                        var li = document.createElement("li");
+                        li.appendChild(document.createTextNode(asText));
+                        ul.appendChild(li);
+                    });
+                }
+            }
+        );
+    };
+    </script>
+    
+    <h1>Retrieve Status of Asynchronous Jobs</h1>
+    
+    <p>Jobs:</p>
+    
+    <ul id="asyncJobList">
+    </ul>
+    <button onclick="fetchAsyncJobs()">Retrieve Jobs</button>
+    
+</apex:page>

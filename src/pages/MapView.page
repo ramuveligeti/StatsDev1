@@ -1,0 +1,26 @@
+<apex:page sidebar="false" applyHtmlTag="true" controller="MapViewController">
+<head>
+	<script language="javascript" type="text/javascript">
+		function setHeight(obj){}
+			var body = document.body, html = document.documentElement;
+			var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+			console.log("height = "+height);
+			obj.setAttribute("height", height + 'px');
+			console.log("attribute height = "+obj.getAttribute("height");
+		}
+	</script>
+
+	<style type="text/css">
+		#arcgis{
+			height:83vh;
+		}
+	</style>
+</head>
+
+<body>
+    <iframe id="arcgis" src="{!mapURL}" width="100%" frameBorder="0" height="100vh" onload="">
+        Your browser does not support iFrame.
+        You can visit map view <a href="{!mapURL}">here</a>
+    </iframe>
+</body>
+</apex:page>

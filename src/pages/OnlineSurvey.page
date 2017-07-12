@@ -1,0 +1,30 @@
+<apex:page standardController="Response__c">
+    <apex:includeScript value="/support/console/34.0/integration.js"/>
+    <script type="text/javascript">
+        
+        window.onload = function () {
+            var openSubtab = function openSubtab(result) { 
+                var primaryTabId = result.id; 
+                sforce.console.openSubtab(primaryTabId , 'http://www.westpac.co.nz', true, 'Online Survey URL', null,openSuccess, 'salesforceSubtab'); 
+            }; 
+            var a='{!Response__c.Online_Survey_URL__c}'; 
+            if(a==null||!a){ 
+                alert ('This feature is not available on this response.'); 
+            } else if (sforce.console.isInConsole()) { 
+                sforce.console.getEnclosingPrimaryTabId(openSubtab); 
+            } else { 
+                window.open('{!Response__c.Online_Survey_URL__c}','_blank');
+            }            
+        }
+        
+        var openSuccess = function openSuccess(result) {
+            //Report whether opening the new tab was successful
+            if (result.success == true) {
+                alert('Primary tab successfully opened');
+            } else {
+                alert('Primary tab cannot be opened');
+            }
+        };
+        
+  </script>
+</apex:page>

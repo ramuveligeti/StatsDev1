@@ -1,0 +1,45 @@
+<apex:page standardController="Skillset__c" extensions="BulkAssignSkillsetCon">
+    <c:LoadingWindow />
+    <apex:form id="bulkSkills">
+        <apex:pageMessages />
+        <apex:pageBlock title="Bulk Assign Skillset">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save" reRender="bulkSkills" status="loadStatus"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" onclick="return window.confirm('Any changes made will not be saved. Are you sure?');" status="loadStatus"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Users</apex:outputLabel>
+                    <c:MultiselectPicklist leftLabel="Available Users"
+                                           leftOptions="{!allUsers}"
+                                           rightLabel="Selected Users"
+                                           rightOptions="{!selectedUsers}"
+                                           size="14"
+                                           width="150px"
+                                           required="true"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Collections</apex:outputLabel>
+                    <c:MultiselectPicklist leftLabel="Available Collections"
+                                           leftOptions="{!allCollections}"
+                                           rightLabel="Selected Collections"
+                                           rightOptions="{!selectedCollections}"
+                                           size="14"
+                                           width="150px"
+                                           required="true"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Skills</apex:outputLabel>
+                    <c:MultiselectPicklist leftLabel="Available Skills"
+                                           leftOptions="{!allSkills}"
+                                           rightLabel="Selected Skills"
+                                           rightOptions="{!selectedSkills}"
+                                           size="14"
+                                           width="150px"
+                                           required="true"/>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!Skillset__c.Training_Completion_Date__c}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,25 @@
+<apex:page standardController="Collection__c" extensions="CollectionResponseRateCustomSettingCtrl">
+<apex:outputPanel rendered="false">
+{!Collection__c.Collection_Code__c}
+</apex:outputPanel>
+<c:LoadingWindow />
+<apex:form >
+<apex:pageBlock >
+	<apex:pageBlockButtons >
+		<apex:commandButton action="{!save}" value="Save and Close" status="loadStatus"/>
+		<apex:commandButton action="{!cancel}" value="Cancel"/>
+	</apex:pageBlockButtons>
+
+	<apex:pageBlockSection title="Response Rate Target Fields">
+		<apex:repeat var="f" value="{!availableFields}">
+			<apex:PageBlockSectionItem >
+				<apex:outputLabel value="{!f.label}"/>
+				<apex:inputCheckbox value="{!f.selected}"/>
+			</apex:PageBlockSectionItem>
+		</apex:repeat>
+	</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+
+</apex:page>

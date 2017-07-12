@@ -1,0 +1,106 @@
+<apex:page standardController="Response__c" extensions="ResponseCloneExCon">
+    <apex:outputPanel id="hiddenFields" rendered="false">
+        {!Response__c.Unit_of_Interest__r.RecordTypeId}
+        {!Response__c.Unit_of_Interest__r.Level_Number__c}
+        {!Response__c.Unit_of_Interest__r.Building_Name__c}
+        {!Response__c.Unit_of_Interest__r.Unit_Number__c}
+        {!Response__c.Unit_of_Interest__r.Road_Number__c}
+        {!Response__c.Unit_of_Interest__r.Road_Number_Alpha__c}
+        {!Response__c.Unit_of_Interest__r.Road_Name__c}
+        {!Response__c.Unit_of_Interest__r.Road_Type__c}
+        {!Response__c.Unit_of_Interest__r.Rural_Delivery_Number__c}
+        {!Response__c.Unit_of_Interest__r.Suburb__c}
+        {!Response__c.Unit_of_Interest__r.Town_or_City__c}
+        {!Response__c.Unit_of_Interest__r.Postcode__c}
+        {!Response__c.Unit_of_Interest__r.DP_ID__c}
+        {!Response__c.Unit_of_Interest__r.Address_Type__c}
+        {!Response__c.Unit_of_Interest__r.Other_Address_Type__c}
+        {!Response__c.Unit_of_Interest__r.Address_Sub_Type__c}
+        {!Response__c.Unit_of_Interest__r.Meshblock_Code__c}
+        {!Response__c.Unit_of_Interest__r.Shell_Address__c}
+        {!Response__c.Unit_of_Interest__r.Related_Observed_Address__c}
+  
+        {!Response__c.Unit_of_Interest__r.PSU_Number__c}
+        {!Response__c.Unit_of_Interest__r.PSU_Name__c}
+        {!Response__c.Unit_of_Interest__r.Region_Number__c}
+        {!Response__c.Unit_of_Interest__r.Region_Name__c}
+        {!Response__c.Unit_of_Interest__r.Territorial_Authority_Number__c}
+        {!Response__c.Unit_of_Interest__r.Territorial_Authority_Name__c}
+        {!Response__c.Unit_of_Interest__r.Team_Leader_Area_Number__c}
+        {!Response__c.Unit_of_Interest__r.Team_Leader_Area_Name__c}
+        {!Response__c.Unit_of_Interest__r.Area_Unit_Number__c}
+        {!Response__c.Unit_of_Interest__r.Area_Unit_Name__c}
+      
+        {!Response__c.Collection_Instance__c}
+        {!Response__c.Collection_Instance__r.Collection__r.Name}
+        {!Response__c.Collection_Instance__r.Collection__r.Collection_Code__c}
+        {!Response__c.Type__c}
+        {!Response__c.Instrument__c}
+        {!Response__c.Unit_Delivery_Mode__c}
+        {!Response__c.Status__c}
+        {!Response__c.RecordType.Name}
+        {!Response__c.Wave__c}
+        {!Response__c.Recordtypeid}
+        {!Response__c.Document_Number__c}
+        {!Response__c.Access_Code__c}
+    </apex:outputPanel>
+    <apex:form id="CreateUnitofInterest">
+        <c:LoadingWindow />
+        <apex:pageMessages />
+        <apex:pageBlock title="Clone Response">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Copy & Update Response" action="{!cloneResponse}" reRender="CreateUnitofInterest" status="loadStatus" rendered="{!renderContent}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection collapsible="true" showHeader="true" title="Unit Of Interest" rendered="{!renderContent}">
+                <apex:inputField value="{!unitOfInterestObj.Level_Number__c}" taborderhint="1"/>
+                <apex:inputField value="{!unitOfInterestObj.DP_ID__c}" taborderhint="12"/>
+                <apex:inputField value="{!unitOfInterestObj.Building_Name__c}" taborderhint="2"/>
+                <apex:inputField value="{!unitOfInterestObj.Meshblock_Code__c}" taborderhint="13"/>
+                <apex:inputField value="{!unitOfInterestObj.Unit_Number__c}" taborderhint="3"/>
+                <apex:inputField value="{!unitOfInterestObj.Address_Type__c}" taborderhint="14"/>
+                <apex:inputField value="{!unitOfInterestObj.Road_Number__c}" taborderhint="4"/>
+                <apex:inputField value="{!unitOfInterestObj.Other_Address_Type__c}" taborderhint="15"/>
+                <apex:inputField value="{!unitOfInterestObj.Road_Number_Alpha__c}" taborderhint="5"/>
+                <apex:inputField value="{!unitOfInterestObj.Address_Sub_Type__c}" taborderhint="17"/>
+                <apex:inputField value="{!unitOfInterestObj.Road_Name__c}" taborderhint="6"/>
+                <apex:inputField value="{!unitOfInterestObj.Road_Type__c}" taborderhint="7"/>
+                <apex:inputField value="{!unitOfInterestObj.Rural_Delivery_Number__c}" taborderhint="8"/>
+                <apex:inputField value="{!unitOfInterestObj.Suburb__c}" taborderhint="9"/>
+                <apex:inputField value="{!unitOfInterestObj.Town_or_City__c}" taborderhint="10"/>
+                <apex:outputPanel />
+                <apex:inputField value="{!unitOfInterestObj.Postcode__c}" taborderhint="11"/>
+                <apex:outputPanel />
+                <apex:inputField value="{!unitOfInterestObj.Area_Unit_Name__c}" taborderhint="13"/>
+                <apex:inputField value="{!unitOfInterestObj.Area_Unit_Number__c}" taborderhint="12"/>
+                <apex:inputField value="{!unitOfInterestObj.PSU_Name__c}" taborderhint="15"/>
+                <apex:inputField value="{!unitOfInterestObj.PSU_Number__c}" taborderhint="14"/>
+                <apex:inputField value="{!unitOfInterestObj.Region_Name__c}" taborderhint="21"/>
+                <apex:inputField value="{!unitOfInterestObj.Region_Number__c}" taborderhint="20"/>
+                <apex:inputField value="{!unitOfInterestObj.Team_Leader_Area_Name__c}" taborderhint="17"/>
+                <apex:inputField value="{!unitOfInterestObj.Team_Leader_Area_Number__c}" taborderhint="16"/>
+                <apex:inputField value="{!unitOfInterestObj.Territorial_Authority_Name__c}" taborderhint="19"/>
+                <apex:inputField value="{!unitOfInterestObj.Territorial_Authority_Number__c}" taborderhint="18"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+
+        <apex:pageBlock rendered="{!renderContent}">
+            <apex:pageBlockSection collapsible="true" showHeader="true" title="Select to Create Work Items" rendered="{!renderContent}" columns="1">
+                <apex:pageBlockTable value="{!workItemWrapperList}" var="wiw" title="Work Items" >
+                    <apex:column width="5%">
+                        <apex:inputCheckbox value="{!wiw.selected}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Work_Item__c.fields.Delivery_Mode__c.label}" width="30%">
+                        <apex:outputText value="{!wiw.deliveryMode}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Work_Item__c.fields.Work_Item_Type__c.label}" width="30%">
+                        <apex:outputText value="{!wiw.workItemType}"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Work_Item__c.fields.Workload__c.label}" width="30%">
+                        <apex:outputText value="{!wiw.workLoad}"/>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,11 @@
+<apex:page controller="SetPrimaryContactExCon" action="{!redirect}">
+    <apex:form >
+        <apex:pageBlock title="Set Primary Contact">
+            <apex:pageMessages id="PageMessage"/>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Yes" action="{!setPrimaryContact}" reRender="PageMessage"  rendered="{!renderButtons}"/>
+                <apex:commandButton value="No" action="{!doNotSetPrimaryContact}" rendered="{!renderButtons}"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

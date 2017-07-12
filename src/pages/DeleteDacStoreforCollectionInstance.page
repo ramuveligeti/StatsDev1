@@ -1,0 +1,12 @@
+<apex:page showHeader="true" sidebar="true" standardController="Collection_Instance__c" extensions="DeleteDACforCollectInstController">
+	<apex:form >
+		<apex:pageBlock >
+			<apex:pageMessages />
+
+			<apex:pageBlockButtons >
+	            <apex:commandButton action="{!deleteDACStore}" value="Delete Dac Records" rendered="{!showDACDeleteButton}"/>
+	            <apex:commandButton action="{!cancel}" value="Cancel" rendered="{!showDACCancelButton}"/>
+	        </apex:pageBlockButtons>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

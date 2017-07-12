@@ -1,0 +1,6 @@
+<apex:page standardController="Project__c">
+    <c:SP_Process labels="['Application Received','Application Started','On hold','Initial Approvals Completed','Project Active (Approved)','Project Completed','Project Rejected','Project Cancelled']"
+        shortlabels="['AR','AS','OH','IA','PA','PC','PR','C']" 
+        selected="{!Project__c.Status__c}"
+    />
+</apex:page>

@@ -1,0 +1,93 @@
+<!--
+/**
+* @amendment     
+* @author        Caterina Cuccurullo
+* @date          07.09.2016
+* @description   ECP-3527  display additional columns from response & add 
+*                column header Collection Unit                
+*/
+-->
+<apex:page tabStyle="Pack__c" controller="RequestReplacementFormsCon">
+    <script type="text/javascript">
+        function checkAll(cb,cbid){
+            var inputElem = document.getElementsByTagName("input");                     
+            for(var i=0; i<inputElem.length; i++)
+                 if(inputElem[i].id.indexOf(cbid)!=-1)                                        
+                    inputElem[i].checked = cb.checked;
+        }
+    </script>
+
+    <c:LoadingWindow />
+    
+    <apex:form id="replacementForm">
+        <apex:pageMessages id="messages"/>
+        <apex:pageBlock title="Request Replacement Forms" id="main-pageblock">
+            <apex:pageBlockButtons id="buttons">
+                <apex:commandButton value="Cancel" action="{!cancel}" status="loadStatus"/>
+                <apex:commandButton value="Create Work Items" action="{!createWorkItems}" status="loadStatus" rendered="{!hasReplaceables}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Collection Instance" rendered="{!hasActiveCollectionIntance}" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Collection Instance</apex:outputLabel>
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+	    				<apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:selectList value="{!selectedCollectionInstance}" multiselect="false" size="1">
+                            <apex:selectOptions value="{!ciSelectOptions}"/>
+                            <apex:actionSupport event="onchange" action="{!onCollectionInstanceChange}" reRender="replacementForm" status="loadStatus"/>
+                        </apex:selectList>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Delivery Mode</apex:outputLabel>
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+	    				<apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:selectList value="{!selectedDeliveryMode}" multiselect="false" size="1" disabled="{!NOT(hasSelectedCollectionInstance)}">
+                            <apex:selectOptions value="{!dmSelectOptions}"/>
+                            <apex:actionSupport event="onchange" action="{!onDeliveryModeChange}"  reRender="replacementForm" status="loadStatus"/>
+                        </apex:selectList>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Unit Responses" columns="1" rendered="{!hasActiveCollectionIntance}">
+                <apex:pageMessage severity="INFO" summary="No responses found for the selected Collection Instance." strength="1" rendered="{!hasSelectedCollectionInstance && NOT(hasResponses)}"/>
+                <apex:pageBlockTable value="{!responses}" var="r" rendered="{!hasResponses}">
+                    <apex:column headerValue="Select">
+                        <apex:facet name="header">
+                            <apex:inputCheckbox onclick="checkAll(this,'checkResponses')"/>
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!r.sel}" id="checkResponses"/>
+                    </apex:column>
+                    <apex:column >
+                     <apex:facet name="header">Collection Unit ID</apex:facet> {!r.response.Unit_of_Interest__r.Unit_of_Interest_ID__c}
+                    </apex:column>
+                    <apex:column value="{!r.response.Unit_of_Interest__r.Unit_Name__c}"/>
+                    <apex:column value="{!r.response.Delivery_Address__c}" />
+                    <apex:column value="{!r.response.Birth__c}"/> 
+                    <apex:column >
+                     <apex:facet name="header">Response ID</apex:facet> {!r.response.Name}
+                    </apex:column>
+                    <apex:column >
+                     <apex:facet name="header">Survey Unit ID</apex:facet> {!r.response.Survey_Unit__r.Unit_of_Interest_ID__c }
+                    </apex:column>
+                    <apex:column >
+                     <apex:facet name="header">Survey Unit Name</apex:facet> {!r.response.Survey_Unit_Name__c}
+                    </apex:column>
+                    </apex:pageBlockTable>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Replaceable Packs" columns="1" rendered="{!hasActiveCollectionIntance}">
+                <apex:pageMessage severity="INFO" summary="No replaceable packs found on the selected Collection Instance and Delivery Mode." strength="1" rendered="{!hasSelectedDeliveryMode && NOT(hasPacks)}"/>
+                <apex:pageBlockTable value="{!packs}" var="r" rendered="{!hasPacks}">
+                    <apex:column headerValue="Select">
+                        <apex:facet name="header">
+                            <apex:inputCheckbox onclick="checkAll(this,'checkPacks')"/>
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!r.sel}" id="checkPacks"/>
+                    </apex:column>
+                    <apex:column value="{!r.pack.Name}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

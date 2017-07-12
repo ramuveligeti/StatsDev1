@@ -1,0 +1,4 @@
+<apex:page standardController="Response__c" sidebar="false" showHeader="false"
+ showChat="false" standardStylesheets="true">
+ <slt:Timeline value="{!Response__c.Id}" csat="true" />
+</apex:page>

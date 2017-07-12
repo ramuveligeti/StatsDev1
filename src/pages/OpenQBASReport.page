@@ -1,0 +1,15 @@
+<apex:page standardcontroller="Work_Item__c" extensions="OpenQBASReportController">
+    <apex:outputpanel rendered="false">
+        {!Work_Item__c.Id}
+        {!Work_Item__c.Name}
+        {!Work_Item__c.Collection__c}
+        {!Work_Item__c.Collection_Instance_Code__c}
+        {!Work_Item__c.Collection_Instance__c}
+        {!Work_Item__c.Collection_Instance_Name__c}
+        {!Work_Item__c.Response__r.Collection_Code__c}
+        {!Work_Item__c.Unit__c}
+    </apex:outputpanel>
+    <apex:pageblock rendered="{!display}">
+        <a href="{!urlString}" target="_blank" >QBAS MEP Report</a>
+    </apex:pageblock>
+</apex:page>

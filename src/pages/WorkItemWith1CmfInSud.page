@@ -1,0 +1,26 @@
+<apex:page standardController="Work_Item__c" >
+    <apex:pageBlock mode="maindetail">    
+        <apex:pageBlockSection columns="1">
+        <apex:pageBlockSectionItem helpText="{! $ObjectType.Work_Item__c.fields.Survey_Unit_Phone__c.InlineHelpText }" >
+        	<apex:outputLabel >{! $ObjectType.Work_Item__c.fields.Survey_Unit_Phone__c.Label }</apex:outputLabel>
+            <apex:outputField value="{! Work_Item__c.Survey_Unit_Phone__c}"/>
+		</apex:pageBlockSectionItem>		
+        <apex:pageBlockSectionItem helpText="{! $ObjectType.Work_Item__c.fields.Survey_Unit_of_Interest_ID__c.InlineHelpText }" >
+        	<apex:outputLabel >{! $ObjectType.Work_Item__c.fields.Survey_Unit_of_Interest_ID__c.Label }</apex:outputLabel>
+            <apex:outputField value="{! Work_Item__c.Survey_Unit_of_Interest_ID__c}"/>
+		</apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem helpText="{! $ObjectType.Work_Item__c.fields.Survey_Unit_Name__c.InlineHelpText }" >
+        	<apex:outputLabel >{! $ObjectType.Work_Item__c.fields.Survey_Unit_Name__c.Label }</apex:outputLabel>
+            <apex:outputField value="{! Work_Item__c.Survey_Unit_Name__c}"/>
+		</apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem helpText="{! $ObjectType.Work_Item__c.fields.Survey_Unit_Address__c.InlineHelpText }">
+        	<apex:outputLabel >{! $ObjectType.Work_Item__c.fields.Survey_Unit_Address__c.Label }</apex:outputLabel>
+            <apex:outputField value="{! Work_Item__c.Survey_Unit_Address__c}" />
+		</apex:pageBlockSectionItem>  
+        <apex:pageBlockSectionItem rendered="{! Work_Item__c.Response__r.CO_1_Label__c!= NULL && Work_Item__c.Response__r.Collection_Code__c = 'AOS'}">
+            <apex:outputLabel >{!Work_Item__c.Response__r.CO_1_Label__c}</apex:outputLabel>
+            <apex:outputField value="{!Work_Item__c.Response__r.CO_1__c}"/>
+        </apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+	</apex:pageBlock>	
+</apex:page>

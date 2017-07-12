@@ -1,0 +1,57 @@
+<apex:page standardController="Work_Item__c" extensions="RecordOutcomesForEscalationExCon">
+    <apex:form >
+        <apex:outputPanel rendered="false">
+            {!Work_Item__c.Escalation_Reason__c}
+            {!Work_Item__c.Response__r.Extension_Date__c}
+            {!Work_Item__c.Response__r.Collection_Instance__r.Extension_Cut_off_Date__c }
+            {!Work_Item__c.Response__c}
+            {!Work_Item__c.OwnerId}
+            {!Work_Item__c.Decision__c}
+            {!Work_Item__c.Next_Step__c}
+            {!Work_Item__c.New_Call_Back_Time__c}
+            {!Work_Item__c.Requested_Extension_Date__c}
+            {!Work_Item__c.Queue_Id__c}
+        </apex:outputPanel>
+        <c:LoadingWindow />
+        <apex:inputHidden value="{!queueOfTheUser}" id="queueUser" />
+        <apex:actionfunction action="{!fetchNextStep}" name="findNextStep" rerender="outcomesScreen" status="loadStatus" />
+        <apex:actionfunction action="{!checkDependentsOnNextStep}" name="checkNextAction" rerender="outcomesScreen" status="loadStatus" />
+        <apex:pageblock title="Escalation Outcomes" id="outcomesScreen">
+            <apex:pageMessage summary="Only escalation team members have access to this page. If you are part of an escalation team, please contact your System Administrator." severity="error" rendered="{!!display}" strength="2"/>
+            <apex:pageMessages id="showMsg"/>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save" rendered="{!display}"/>
+                <apex:commandbutton action="{!cancel}" value="Cancel" />
+            </apex:pageBlockButtons>
+            <apex:pageblocksection rendered="{!display}">
+                <apex:outputfield value="{!Work_Item__c.Delivery_Mode__c}" />
+                <apex:outputfield value="{!Work_Item__c.Escalation_Reason__c}" id="EscalationReason"/>
+                <apex:pageblocksectionitem >
+                    <apex:outputLabel value="Decision" id="DecisionLabel" for="Decision"/>
+                    <apex:selectlist id="Decision" value="{!workItem.Decision__c}" multiselect="false" size="1" onchange="findNextStep();">
+                        <apex:selectoptions value="{!decisionSelect}" />
+                    </apex:selectlist>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem rendered="{!renderNextStep}">
+                    <apex:outputlabel value="Next Step" id="NextStepLabel" for="NextStep" />
+                    <apex:selectlist id="NextStep" value="{!workItem.Next_Step__c}" multiselect="false" size="1" onchange="checkNextAction();">
+                        <apex:selectoptions value="{!nextStepSelect}" />
+                    </apex:selectlist>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem id="callback" rendered="{!renderCallBack}">
+                    <apex:outputlabel value="Call Back" for="callbackDatetime" id="callbackDatetimeLabel" />
+                    <apex:inputfield value="{!workItem.New_Call_Back_Time__c}" id="callbackDatetime" />
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem id="extension" rendered="{!renderExtension}">
+                    <apex:outputlabel value="Extension Date" for="extensionDate" id="extensionDateLabel" />
+                    <apex:inputfield value="{!workItem.Response__r.Extension_Date__c}" id="extensionDate" />
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem rendered="{!renderOwner}">
+                    <apex:outputlabel value="Owner" for="owner" id="ownerLabel" />
+                    <apex:inputfield value="{!workItem.OwnerId}" id="owner" rendered="{!queueOfTheUser<>'Supplier_Management_Advisers_Queue' && queueOfTheUser<>'Managers_Escalation_Queue'}" />
+                </apex:pageblocksectionitem>
+                <apex:inputtextarea value="{!taskObj.Description}" cols="100" rows="5" />
+            </apex:pageblocksection>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

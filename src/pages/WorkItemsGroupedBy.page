@@ -1,0 +1,114 @@
+<apex:page standardcontroller="Work_Item__c" extensions="RecordOutcomesNewExCon">
+    <apex:includescript value="/support/console/25.0/integration.js" />
+    <style>
+        .activeTab {
+            background-color: #56BCE2;
+            color: #FFFFFF;
+            background-image: none;
+        }
+        .inactiveTab {
+            background-color: lightgrey;
+            color: black;
+            background-image: none;
+        }
+    </style>
+    <script type="text/javascript">
+        function checkAll(cb,cbid){
+            var inputElem = document.getElementsByTagName("input");
+            for(var i=0; i<inputElem.length; i++){
+                if(inputElem[i].id.indexOf(cbid)!=-1){
+                    inputElem[i].checked = cb.checked;
+                }
+            }
+        }
+    </script>
+    <apex:outputpanel rendered="false">
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.LBU__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.Assigned__c}
+        {!Work_Item__c.Response__c}
+        {!Work_Item__c.Contact__r.Assigned__c}
+        {!Work_Item__c.Contact__r.Notes__c}
+        {!Work_Item__c.Response__r.Contact__c}
+        {!Work_Item__c.Approval_Status__c}
+        {!Work_Item__c.Name}
+        {!Work_Item__c.Status__c}
+        {!Work_Item__c.Delivery_Mode__c}
+        {!Work_Item__c.Work_Item_Type__c}
+        {!Work_Item__c.Response__r.Collection_Instance__r.Extension_Cut_off_Date__c}
+        {!Work_Item__c.Response_Extension_Date__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.Notes__c}
+        {!Work_Item__c.Response__r.Extension_Date__c}
+        {!Work_Item__c.Contact__c}
+        {!Work_Item__c.Unit__c}
+        {!Work_Item__c.Outcome__c}
+        {!Work_Item__c.Escalated__c}        
+    </apex:outputpanel>
+    <apex:form >
+        <apex:pageblock title="Outstanding Work Items">
+            <apex:pagemessages />
+            <apex:pageblockbuttons location="top">
+                <apex:commandbutton action="{!recordOutcomes}" value="Record Outcomes" rendered="true" />
+                <apex:commandbutton action="{!interactionLog}" value="Interaction Log" rendered="true" />
+            </apex:pageblockbuttons>
+            <apex:outputpanel rendered="true">
+                <table id="wi_table" class="list" border="0" cellpadding="0" cellspacing="0">
+                    <thead class="activeTab">
+                        <tr class="activeTab">
+                            <th scope="col" colspan="1" style="font-weight:normal;">
+                                <div>Select</div>
+                            </th>
+                            <th scope="col" colspan="1" style="font-weight:normal;">
+                                <div>Primary Work Item</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="dataRow even first" onmouseover="if (window.hiOn){hiOn(this);}" onmouseout="if (window.hiOff){hiOff(this);}" onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}">
+                            <td><apex:inputcheckbox value="{!includeParentWorkItem}" /></td>
+                            <td><apex:outputfield value="{!Work_Item__c.Name}" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </apex:outputpanel>
+            <apex:tabpanel switchtype="client" selectedtab="Contacts" id="theTabPanel" tabclass="activeTab" inactivetabclass="inactiveTab">
+                <apex:tab label="Outstanding Work Items for Contact" name="Contacts" id="contactsTab">
+                    <apex:pagemessage summary="No Outstanding Work Items for Contact Available" severity="Info" strength="1" rendered="{! !display}" />
+                    <apex:pageblocktable value="{!contactsWrapper}" var="cw" rendered="{!display}">
+                        <apex:column >
+                            <apex:facet name="header">
+                                <apex:inputcheckbox onclick="checkAll(this,'contactCheckAll')" />
+                            </apex:facet>
+                            <apex:inputcheckbox value="{!cw.sel}" id="contactCheckAll" />
+                        </apex:column>
+                        <apex:column headervalue="Work Item Number">
+                            <apex:outputlink value="{!cw.wi.Id}">{!cw.wi.Name}</apex:outputlink>
+                        </apex:column>
+                        <apex:column value="{!cw.wi.Work_Item_Type__c}" />
+                        <apex:column value="{!cw.wi.Collection_Instance_Name__c}" />
+                        <apex:column value="{!cw.wi.Response__c}" />
+                        <apex:column value="{!cw.wi.Unit__c}" />
+                    </apex:pageblocktable>
+                </apex:tab>
+                <apex:tab label="Outstanding Work Items for Collection Unit" name="Collection Units" id="collectionUnitsTab">
+                    <apex:pagemessage summary="No Outstanding Work Items for Collection Unit Available" severity="Info" strength="1" rendered="{! !display1}" />
+                    <apex:pageblocktable value="{!collectionUnitsWrapper}" var="uw" rendered="{!display1}">
+                        <apex:column >
+                            <apex:facet name="header">
+                                <apex:inputcheckbox onclick="checkAll(this,'unitCheckAll')" />
+                            </apex:facet>
+                            <apex:inputcheckbox value="{!uw.sel}" id="unitCheckAll" />
+                        </apex:column>
+                        <apex:column headervalue="Work Item Number">
+                            <apex:outputlink value="{!uw.wi.Id}">{!uw.wi.Name}</apex:outputlink>
+                        </apex:column>
+                        <apex:column value="{!uw.wi.Work_Item_Type__c}" />
+                        <apex:column value="{!uw.wi.Collection_Instance_Name__c}" />
+                        <apex:column value="{!uw.wi.Response__c}" />
+                        <apex:column value="{!uw.wi.Unit__c}" />
+                    </apex:pageblocktable>
+                </apex:tab>
+            </apex:tabpanel>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

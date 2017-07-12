@@ -1,0 +1,170 @@
+<apex:page standardController="Work_Item__c" extensions="RecordOutcomesNewExCon">
+    <apex:includescript value="/support/console/25.0/integration.js" />
+    <apex:includescript value="{!$Resource.jqueryLatest}" />
+    <div id="loader" class="loader1" style="display:none;"></div>
+    <div id="overlay" class="overlay1" style="display:none;"></div>
+    <c:LoadingWindow />
+    <style>
+        .overlay1 {
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            opacity: 0.3;
+            -moz-opacity: 0.3;
+            width: 100%;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+            filter: alpha(opacity=30);
+            background: #000;
+            -khtml-opacity: 0.3;
+            z-index: 1000;
+        }
+
+        .loader1 {
+            background: url('/img/loading32.gif') scroll no-repeat 0 0;
+            width: 32px;
+            height: 32px;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            margin-top: -50px;
+            margin-left: -100px;
+            z-index: 999;
+        }
+
+        div.hidden {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript">
+        j$ = jQuery.noConflict();
+        var ext1,extLabel1,feedback1,feedbackLabel1;
+        j$(window).load(function() {
+            fieldsToDisplay();
+        });
+        function fieldsToDisplay(){
+            hidefields();
+            j$("tr").removeClass("hidden");
+        }
+        function hidefields(){
+            j$('label[id*=extensionDateLabel1]').parent().hide();
+            j$('span[id*=extension1]').parent().hide();
+            ext1 = j$('span[id*=extension1]').closest('td').html();
+            extLabel1 = j$('label[id*=extensionDateLabel1]').closest('th').html();
+            j$('label[id*=feedbackLabel1]').parent().hide();
+            j$('span[id*=feedback1]').parent().hide();
+            feedbackLabel1 = j$('label[id*=feedbackLabel1]').closest('th').html();
+            feedback1 = j$('span[id*=feedback1]').closest('td').html();
+            j$('label[id*=escalateLabel]').parent().hide();
+            j$('input[id*=escalate]').parent().hide();
+        }
+
+        function subjectChange(){
+            if(j$('select[id$=subject]').val() == 'Grant Extension'){
+                j$('label[id*=extensionDateLabel1]').parent().show();
+                j$('span[id*=extension1]').parent().show();
+                j$('label[id*=feedbackLabel1]').parent().hide();
+                j$('span[id*=feedback1]').parent().hide();
+                j$('label[id*=escalateLabel]').parent().hide();
+                j$('input[id*=escalate]').parent().hide();
+            }else if(j$('select[id$=subject]').val() == 'Feedback'){
+                j$('label[id*=feedbackLabel1]').parent().show();
+                j$('span[id*=feedback1]').parent().show();
+                j$('label[id*=extensionDateLabel1]').parent().hide();
+                j$('span[id*=extension1]').parent().hide();
+                j$('label[id*=escalateLabel]').parent().show();
+                j$('input[id*=escalate]').parent().show();
+            }else{
+                hidefields();
+            }
+        }
+        function oncompleteFail(){
+                fieldsToDisplay();
+                subjectChange();
+        }
+        function RefreshPrimaryTab(refresh){
+            if(refresh=='true'){
+                loadingWindow1();
+                sforce.console.getFocusedPrimaryTabId(showTabId);
+            }else{
+                oncompleteFail();
+            }
+        }
+
+        var showTabId = function showTabId(result){
+            var tabId = result.id;
+            console.log('tabId=='+tabId);
+            sforce.console.refreshPrimaryTabById(tabId,true,refreshSuccess);
+        };
+
+        var refreshSuccess = function refreshSuccess(result){
+            //Report whether refreshing the primary tab was successful
+            if (result.success == true){
+                //hideLoadingWindow();
+            }else{
+                alert('Primary did not refresh');
+            }
+        };
+        function loadingWindow1(){
+            document.getElementById('loader').style.display = "block";
+            document.getElementById('overlay').style.display = "block";
+        }
+    </script>
+    <apex:outputpanel rendered="false">
+        {!Work_Item__c.Response__r.Collection_Instance__r.Extension_Cut_off_Date__c}
+        {!Work_Item__c.Response__r.Extension_Date__c}
+        {!Work_Item__c.Response_Extension_Date__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.LBU__c}
+        {!Work_Item__c.Response__r.Unit_of_Interest__r.Assigned__c}
+        {!Work_Item__c.Response__c}
+        {!Work_Item__c.Contact__r.Assigned__c}
+        {!Work_Item__c.Contact__r.Notes__c}
+        {!Work_Item__c.Response__r.Contact__c}
+        {!Work_Item__c.Approval_Status__c}
+        {!Work_Item__c.Name}
+        {!Work_Item__c.Contact__c}
+        {!Work_Item__c.Unit__c}
+        {!Work_Item__c.Delivery_Mode__c}
+        {!Work_Item__c.Work_Item_Type__c}
+    </apex:outputpanel>
+    <apex:form >
+        <apex:pageblock title="Interaction Log" id="interactionLog">
+            <apex:pagemessages />
+            <apex:pageblockbuttons location="top">
+                <apex:commandbutton action="{!saveInteractionLog}" value="Save Log" rerender="interactionLog" status="loadStatus" rendered="{!includeParentWorkItem}" oncomplete="RefreshPrimaryTab('{!refreshParentTab}');return false" />
+                <apex:commandbutton action="{!saveInteractionLog}" value="Save Log" rerender="interactionLog" status="loadStatus" rendered="{!!includeParentWorkItem}" oncomplete="oncompleteFail();" />
+                <apex:commandbutton action="{!cancelInteractionLog}" value="Cancel" />
+            </apex:pageblockbuttons>
+            <apex:pageblocksection columns="1">
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel >Contact</apex:outputlabel>
+                    <apex:inputfield value="{!workItem.Contact__c}" />
+                </apex:pageblocksectionitem>
+                <apex:inputfield value="{!taskObj.Subject__c}" onchange="subjectChange();" id="subject" />
+                <apex:pageblocksectionitem id="extension1" html-class="hidden">
+                    <apex:outputlabel value="Extension Date" for="extensionDate1" id="extensionDateLabel1" />
+                    <apex:outputpanel >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!workItem.Response__r.Extension_Date__c}" id="extensionDate1" />
+                        </div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem id="feedback1" html-class="hidden">
+                    <apex:outputlabel value="Feedback Type" for="feedbackType1" id="feedbackLabel1" />
+                    <apex:outputpanel >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!taskObj.Feedback_Type__c}" id="feedbackType1" />
+                        </div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:inputtextarea value="{!taskObj.Description}" cols="50" rows="5" id="description" />
+                <apex:pageblocksectionitem id="escalate" html-class="hidden">
+                    <apex:outputlabel value="Escalate" id="escalateLabel" for="escalate" />
+                    <apex:inputcheckbox value="{!taskObj.Escalated__c}" id="escalate" />
+                </apex:pageblocksectionitem>
+            </apex:pageblocksection>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

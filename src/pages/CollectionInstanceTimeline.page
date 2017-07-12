@@ -1,0 +1,4 @@
+<apex:page standardController="Collection_Instance__c" sidebar="false" showHeader="false"
+ showChat="false" standardStylesheets="true">
+ <slt:Timeline value="{!Collection_Instance__c.Id}" csat="true" />
+</apex:page>

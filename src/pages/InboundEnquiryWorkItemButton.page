@@ -1,0 +1,11 @@
+<apex:page controller="InboundEnquiryWorkItemButton" action="{!createWorkItem}">
+<h1>If you see this, contact System Admin.</h1>
+</apex:page>
+
+<!-- 
+//<apex:page controller="InboundEnquiryWorkItemButton" action="{!createWorkItem}">
+//<h1>If you see this, contact System Admin.</h1>
+//<apex:pageblockbuttons location="top">
+//			<apex:commandButton value="submit" action="{!createWorkItem}" />
+//		</apex:pageblockbuttons>
+//</apex:page> -->

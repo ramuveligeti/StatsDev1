@@ -1,0 +1,36 @@
+[
+    {
+        "attributes": {
+            "type": "AuraDefinition",
+            "url": "/services/data/v36.0/tooling/sobjects/AuraDefinition/0Ad170000000P9VCAU"
+        },
+        "Id": "0Ad170000000P9VCAU",
+        "AuraDefinitionBundleId": "0Ab1700000001gICAQ",
+        "AuraDefinitionBundle": {
+            "attributes": {
+                "type": "AuraDefinitionBundle",
+                "url": "/services/data/v36.0/tooling/sobjects/AuraDefinitionBundle/0Ab1700000001gICAQ"
+            },
+            "DeveloperName": "ZaapIT_RelatedList_Actions"
+        },
+        "DefType": "COMPONENT",
+        "Format": "XML"
+    },
+    {
+        "attributes": {
+            "type": "AuraDefinition",
+            "url": "/services/data/v36.0/tooling/sobjects/AuraDefinition/0Ad170000000P9WCAU"
+        },
+        "Id": "0Ad170000000P9WCAU",
+        "AuraDefinitionBundleId": "0Ab1700000001gICAQ",
+        "AuraDefinitionBundle": {
+            "attributes": {
+                "type": "AuraDefinitionBundle",
+                "url": "/services/data/v36.0/tooling/sobjects/AuraDefinitionBundle/0Ab1700000001gICAQ"
+            },
+            "DeveloperName": "ZaapIT_RelatedList_Actions"
+        },
+        "DefType": "CONTROLLER",
+        "Format": "JS"
+    }
+]

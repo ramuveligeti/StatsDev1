@@ -1,0 +1,31 @@
+<apex:page standardController="Unit__c" extensions="UOIInteractionsExCon" readOnly="true">
+    <apex:repeat value="{!uoiInteractionsWrapperMap}" var="uiw">
+        <apex:outputPanel >
+            <apex:outputLabel styleClass="headerRow" value="UOI ID:{!uiw}"/>
+        </apex:outputPanel>
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!uoiInteractionsWrapperMap[uiw]}" var="uiwDetails">
+                <apex:column headerValue="Collection Instance" value="{!uiwDetails.collectionInstance}"/>
+                <apex:column headerValue="UOI Number" value="{!uiwDetails.uoiNumber}"/>
+                <apex:column headerValue="UOI Description" value="{!uiwDetails.uoiDescription}"/>
+                <apex:column headerValue="Enterprise UOI" value="{!uiwDetails.enterpriseUoiId}"/>
+                <apex:column headerValue="Enterprise UOI Description" value="{!uiwDetails.enterpriseUoiDescription}"/>
+                <apex:column headerValue="Response Number" value="{!uiwDetails.responseNumber}"/>
+                <apex:column headerValue="Response Status" value="{!uiwDetails.responseStatus}"/>
+                <apex:column headerValue="Work Item Number" value="{!uiwDetails.workItemNumber}"/>
+                <apex:column headerValue="Work Item Created Date" value="{!uiwDetails.workItemCreatedDate}"/>
+                <apex:column headerValue="Work Item Created By" value="{!uiwDetails.workItemCreatedBy}"/>
+                <apex:column headerValue="Work Item Type" value="{!uiwDetails.workItemType}"/>
+                <apex:column headerValue="Contact Role" value="{!uiwDetails.contactRole}"/>
+                <apex:column headerValue="Contact Name" value="{!uiwDetails.contactFullName}"/>
+                <apex:column headerValue="Case Number" value="{!uiwDetails.caseNumber}"/>
+                <apex:column headerValue="Case Status" value="{!uiwDetails.caseStatus}"/>
+                <apex:column headerValue="Case Type" value="{!uiwDetails.caseType}"/>
+                <apex:column headerValue="Case Reason" value="{!uiwDetails.caseReason}"/>
+                <apex:column headerValue="Case Owner" value="{!uiwDetails.caseOwner}"/>
+                <apex:column headerValue="Case Created Date" value="{!uiwDetails.caseCreatedDate}"/>
+                <apex:column headerValue="Case Created By" value="{!uiwDetails.caseCreatedBy}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:repeat>
+</apex:page>

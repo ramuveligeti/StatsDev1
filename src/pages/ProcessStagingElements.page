@@ -1,0 +1,27 @@
+<apex:page standardController="Collection_Instance__c" extensions="ProcessStagingElementsExCon" >
+    <apex:outputPanel rendered="false">
+        {!Collection_Instance__c.Collection_Instance_Code__c}
+        {!Collection_Instance__c.Collection__r.Collection_Code__c}
+        {!Collection_Instance__c.RecordType.Name}
+        {!Collection_Instance__c.Collection__c}
+        {!Collection_Instance__c.Primary_Mode__c} 
+        {!Collection_Instance__c.Grouping__c}
+        {!Collection_Instance__c.Contextual_Mappings__c}
+        {!Collection_Instance__c.Batch_Job_ID__c}
+        {!Collection_Instance__c.Delivery_Mode__c}
+    </apex:outputPanel>
+    <c:LoadingWindow />
+    <apex:form id="ProcessForm">
+        <apex:pageMessages />
+        <apex:pageBlock title="Process staging elements">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{!processStagingElements}" value="Process Imports" status="loadStatus" reRender="ProcessForm,AsyncJob"/>
+                <apex:commandButton action="{!deleteStagingElements}" value="Delete Errors" status="loadStatus" reRender="ProcessForm,AsyncJob"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:outputPanel id="AsyncJob" title="Process Imports batch">
+        <c:AsyncJobStatus rendered="{!asyncJobId != NULL}" AsyncJobId="{!asyncJobId}"/>
+    </apex:outputPanel>
+</apex:page>

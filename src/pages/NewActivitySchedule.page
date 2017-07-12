@@ -1,0 +1,177 @@
+<apex:page standardController="Activity_Schedule__c" extensions="CreateWorkItemsExCon" docType="html-5.0">
+    <apex:outputPanel rendered="false">
+        {!Activity_Schedule__c.Collection_Instance__r.Grouping__c}
+    </apex:outputPanel>
+    <c:LoadingWindow />
+    <apex:form id="newForm">
+        <apex:pageMessages id="ShowMsg"></apex:pageMessages>
+        <apex:pageBlock id="createActivitySchedule" title="New Activity Schedule">
+            <apex:pageBlockButtons location="Top">
+                <apex:commandButton action="{!scheduleWorkItems}" value="Save" status="loadStatus"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" immediate="true"/> 
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="newActSch">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Collection_Instance__c.Label}"/>
+                    <apex:outputPanel >
+                        <div class = "requiredInput">
+                            <div class = "requiredBlock"></div>
+                            <apex:inputField value="{!actSch.Collection_Instance__c}" />
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Delivery_Mode__c.Label}"/>
+                    <apex:outputPanel >
+                        <div class = "requiredInput">
+                            <div class = "requiredBlock"></div>
+                            <apex:inputField value="{!actSch.Delivery_Mode__c}" />
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Work_Item_Type__c.Label}"/>
+                    <apex:outputPanel >
+                        <div class = "requiredInput">
+                            <div class = "requiredBlock"></div>
+                            <apex:inputField value="{!actSch.Work_Item_Type__c}"/>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!actSch.Pack__c}"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Scheduled_Date_time__c.Label}"/>
+                    <apex:outputPanel >
+                        <div class = "requiredInput">
+                            <div class = "requiredBlock"></div>
+                            <apex:inputField value="{!actSch.Scheduled_Date_time__c}"/>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Frequency__c.Label}"/>
+                    <apex:outputPanel >
+                        <div class = "requiredInput">
+                            <div class = "requiredBlock"></div>
+                            <apex:inputField value="{!actSch.Frequency__c}"/>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!actSch.Occurrence__c}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:actionFunction action="{!changeValueDataType}" name="changeValueDataTypeFunction" rerender="createActivitySchedule,FilterPage,ShowMsg" status="loadStatus">
+            <apex:param name="firstParam" assignTo="{!sequence}" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="applyFiltersFunction" action="{!activateFilters}" reRender="newActSch,FilterPage,ShowMsg" status="loadStatus"/>
+        <apex:pageBlock id="FilterPage" title="Define Filters">
+            <!--apex:pageBlockButtons location="Top">
+                <apex:commandButton action="{!scheduleWorkItems}" value="Save" status="loadStatus" rendered="{!displayContent}"/>
+                <apex:commandButton action="{!backToCollectionInstance}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons-->
+            <apex:pageBlockButtons location="Bottom">
+                <apex:commandButton action="{!addFilter}" value="Add Filter" rendered="{!selectedFilter == 'Custom Filter' && applyFilters}" reRender="FilterPage,ShowMsg" status="loadStatus"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1" id="filterSection">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Select Filter Type" style="font-weight: bold;"/>
+                    <apex:selectList value="{!selectedFilter}" multiselect="false" size="1" onchange="applyFiltersFunction();">
+                        <apex:selectOptions value="{!filterType}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!selectedFilter == 'Predefined Filter' && filterList.size>1}">
+                    <apex:outputLabel value="Predefined Filters" style="font-weight: bold;"/>
+                    <apex:outputPanel >
+                        <apex:selectList value="{!preUsedFilter}" multiselect="false" size="1" id="predefinedFilter">
+                            <apex:selectOptions value="{!filterList}"/>
+                        </apex:selectList>
+                        <apex:commandbutton action="{!showPredefinedFilter}" value="Copy to Custom Filter" rerender="createActivitySchedule,FilterPage" status="loadStatus" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!selectedFilter == 'Custom Filter' && applyFilters && !filterNameReadOnly}">
+                    <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Filter_Name__c.Label}"/>
+                    <apex:outputPanel >
+                        <div class = "requiredInput">
+                            <div class = "requiredBlock"></div>
+                            <apex:inputField value="{!actSch.Filter_Name__c}"/>
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!selectedFilter == 'Custom Filter' && applyFilters}">
+                    <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Filter_Description__c.Label}"/>
+                    <apex:inputTextarea value="{!actSch.Filter_Description__c}" cols="75" rendered="{!selectedFilter == 'Custom Filter' && applyFilters && !filterNameReadOnly}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageMessage severity="INFO" strength="1" summary="No Predefine filters available" rendered="{!selectedFilter == 'Predefined Filter' && filterList.size == 1}"/>
+            <apex:pageBlockTable id="filterTable" value="{!filterWrapperList}" var="fl" rendered="{!selectedFilter == 'Custom Filter' && applyFilters}" >
+                <apex:column value="{!fl.sequence}." rendered="{!applyFilterLogic}" width="1%"/>
+                <apex:column headerValue="Filter" width="10%">
+                    <apex:selectList value="{!fl.filterOption}" multiselect="false" size="1" onchange="changeValueDataTypeFunction('{!fl.sequence}');">
+                        <apex:selectOptions value="{!filters}"/>
+                    </apex:selectList>
+                </apex:column>
+                <apex:column headerValue="Operator" width="10%">
+                    <apex:selectlist id="filterOperator" value="{!fl.filterOperator}" multiselect="false" size="1">
+                        <apex:selectoptions value="{!fl.operators}" />
+                    </apex:selectlist>
+                </apex:column>
+                <apex:column headerValue="Value" width="10%">
+                    <!--apex:input type="date" value="{!fl.dateValue}" rendered="{!fl.dataType=='Date'}"/>
+                    <apex:input type="datetime-local" value="{!fl.datetimeValue}" rendered="{!fl.dataType=='Datetime'}"/-->
+                    <apex:inputField id="filterDate" value="{!fl.ci.Planned_Start_Date__c}" rendered="{!fl.dataType=='Date'}"/>
+                    <apex:inputField value="{!fl.ci.Planned_Close_Off__c}" rendered="{!fl.dataType=='Datetime'}"/>
+                    <apex:inputText value="{!fl.value}" rendered="{!fl.dataType=='String'}"/>
+                    <apex:inputText value="{!fl.lookupValue}" rendered="{!fl.dataType=='Lookup'}"/>
+                    <apex:inputCheckbox value="{!fl.value}" rendered="{!fl.dataType=='Boolean'}"/>
+                    <apex:selectList value="{!fl.value}" multiselect="false" size="1" rendered="{!fl.dataType=='Picklist'}">
+                        <apex:selectOptions value="{!fl.picklistOptions}"/>
+                    </apex:selectList>
+                </apex:column> 
+                <apex:column value="{!fl.andOperator}" rendered="{! !applyFilterLogic}" width="5%"/>
+                <apex:column width="5%">
+                    <apex:commandButton action="{!removeSelected}" reRender="FilterPage" value="Remove" status="loadStatus">
+                        <apex:param name="removeId" value="{!fl.uniqueId}" assignTo="{!removeId}" />
+                    </apex:commandButton>
+                </apex:column>
+            </apex:pageBlockTable>
+            <br/>
+            <apex:outputPanel rendered="{!selectedFilter == 'Custom Filter' && applyFilters}">
+                <apex:commandLink value="Add Filter Logic" action="{!applyFilterLogicMethod}" rendered="{! !applyFilterLogic}" reRender="newForm" status="loadStatus"/>
+                <apex:commandLink value="Clear Filter Logic" action="{!clearFilterLogicMethod}" rendered="{!applyFilterLogic}" reRender="newForm" status="loadStatus"/>
+                <br/>
+                <br/>
+                <apex:outputPanel rendered="{!applyFilterLogic}">
+                    <apex:outputLabel value="Filter Logic:"/>
+                    <br/>
+                    <apex:inputText value="{!filterLogic}" size="75"/>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:pageBlockSection id="estimateWI">
+                <apex:pageBlockSectionItem >
+                    <apex:commandbutton value="Estimate Work Items Count" action="{!estimateWorkItems}" rerender="FilterPage,ShowMsg" style="font-size:11px"/>
+                    <apex:outputtext value="{!estimatedWorkItemsCount}" />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="Extract Work Items" id="extractWI">
+            <apex:pageBlockSection >
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Immediate</apex:outputLabel>
+                    <apex:outputPanel >
+                        <apex:actionSupport event="onchange" reRender="extractWI" status="loadStatus"/>
+                        <apex:inputCheckbox value="{!immediateExtract}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!immediateExtract}" id="outputCSVFormat">
+                    <apex:outputLabel value="{!$ObjectType.Activity_Schedule__c.fields.Output_CSV_Format__c.Label}"/>
+                    <apex:outputPanel id="outputCSV">
+                        <div class = "requiredInput">
+                            <div class = "requiredBlock"></div>
+                            <apex:inputField value="{!actSch.Output_CSV_Format__c}" />
+                        </div>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

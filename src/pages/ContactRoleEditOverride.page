@@ -1,0 +1,68 @@
+<apex:page showHeader="true" sidebar="true" standardController="Contact_Role__c" extensions="ContactRoleEditOverrideCtrl">
+	<apex:form >
+		<apex:pageBlock >
+			<style>
+	            body .bPageBlock .pbBody .custom-bg-color .pbSubheader{
+	                background-color:#FFD6D6;
+	            }
+	            body .bPageBlock .pbBody .custom-bg-color .pbSubheader h3{
+	                color: black;
+	            }
+			</style>
+
+			<apex:pageMessages />
+
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Save" action="{!saveContactRole}"/>
+				<apex:commandButton value="Cancel" action="{!cancel}" />
+			</apex:pageBlockButtons>
+			
+			<apex:outputPanel styleClass="custom-bg-color" layout="block">
+				<apex:pageBlockSection title="Information" columns="2" collapsible="false">
+					<apex:inputField value="{!contactRole.Contact__c}" />
+					<apex:inputField value="{!contactRole.Primary_Contact__c}" />
+					
+					<apex:inputField value="{!contactRole.Care_of__c}" required="false" />
+					<apex:inputField value="{!contactRole.Status__c}" required="true" />
+					
+					<apex:inputField value="{!contactRole.Role__c}" required="true" />
+					<apex:inputField value="{!contactRole.Collection__c}" required="true" />
+				</apex:pageBlockSection>
+			
+				<apex:pageBlockSection title="Preferred Modes" columns="2" collapsible="false">
+					<apex:pageBlockSectionItem helpText="{!$ObjectType.Contact_Role__c.fields.Preferred_Collection_Mode__c.inlineHelpText}">
+						<apex:outputLabel value="Preferred Collection Mode" />
+						<apex:selectList value="{!collectionMode}" size="1">
+							<apex:selectOptions value="{!collectionModes}" />
+							<apex:actionSupport event="onchange" action="{!changeCollectionMode}" reRender="collectionModeDescription"/>
+						</apex:selectList>	
+					</apex:pageBlockSectionItem>
+
+					<apex:pageBlockSectionItem helpText="{!$ObjectType.Contact_Role__c.fields.Preferred_Delivery_Mode__c.inlineHelpText}">
+						<apex:outputLabel value="Preferred Delivery Mode" />
+						<apex:selectList value="{!deliveryMode}" size="1">
+							<apex:selectOptions value="{!deliveryModes}" />
+						</apex:selectList>	
+					</apex:pageBlockSectionItem>
+
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel />
+						<apex:outputText id="collectionModeDescription" value="{!collectionModeDescription}" />	
+					</apex:pageBlockSectionItem>
+				</apex:pageBlockSection>
+				
+				<apex:pageBlockSection title="Unit Information" columns="2" collapsible="false">
+					<apex:inputField value="{!contactRole.Unit_of_Interest_ID__c}" required="true" />
+				</apex:pageBlockSection>
+				
+				<apex:pageBlockSection title="Notes" columns="1" collapsible="false">
+					<apex:inputField value="{!contactRole.Notes__c}" />
+				</apex:pageBlockSection>
+				
+				<!-- <apex:pageBlockSection title="System Information" columns="1" collapsible="false">
+					<apex:inputField value="{!contactRole.Identifier__c}" />
+				</apex:pageBlockSection> -->
+			</apex:outputPanel>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

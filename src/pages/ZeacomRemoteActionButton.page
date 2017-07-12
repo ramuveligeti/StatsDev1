@@ -1,0 +1,5 @@
+<apex:page standardController="Work_Item__c" extensions="ZeacomRemoteActionController" action="{!finishPreviewing}">
+    <script type="text/javascript">
+        window.close();
+    </script>
+</apex:page>

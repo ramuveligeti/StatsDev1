@@ -1,0 +1,91 @@
+<apex:page standardController="Case" extensions="CensusCallCentreUpdateController">
+
+<apex:outputPanel layout="none" rendered="false">
+{!Case.Response__c}
+
+{!Case.Response__r.Workflow_Status__c}{!Case.Response__r.Response_Summary_Status__c}{!Case.Response__r.Status__c}
+{!Case.Response__r.Occupancy_Status__c}{!Case.Response__r.Occupancy_Status_Reason__c} 
+
+{!Case.Response__r.Unit_of_Interest__c}{!Case.Response__r.Unit_of_Interest__r.Address_Type__c}{!Case.Response__r.Unit_of_Interest__r.Address_Sub_Type__c}
+</apex:outputPanel>
+
+<apex:form id="cform">
+<apex:outputPanel rendered="{! !displayPage}">
+Caes is not associated to a Response.
+</apex:outputPanel>
+
+<apex:outputPanel layout="none" rendered="{! readonly}">
+<apex:outputText value="You are in Readonly mode, because the Unit Status is either Refused or Completed." />
+</apex:outputPanel>
+
+<apex:pageBlock mode="edit" title="Update Unit of Interest Details" id="main" rendered="{!displayPage}">
+	<apex:pageBlockButtons location="top">
+		<apex:commandButton action="{!save}" value="Save" rendered="{! !readonly}" />
+		<apex:commandButton action="{!backToCase}" value="Cancel" />
+	</apex:pageBlockButtons>
+	<apex:pageBlockSection columns="2"  title="Address Type" collapsible="false" rendered="{! !readonly}">
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Address Type" for="addrtype" />
+			<apex:inputField value="{!unit.Address_Type__c}" id="addrtype"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Address Sub Type" for="addrsubtype" />
+			<apex:inputField value="{!unit.Address_Sub_Type__c}" id="addrsubtype"/>
+		</apex:pageBlockSectionItem>
+	</apex:pageBlockSection>
+	<apex:pageBlockSection columns="2"  title="Occupancy Status" collapsible="false" rendered="{! !readonly}">
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Occupancy Status" for="occstatus" />
+			<apex:inputField value="{!response.Occupancy_Status__c}" id="occstatus"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Occupancy Status Reason" for="occstatusreason" />
+			<apex:inputField value="{!response.Occupancy_Status_Reason__c}" id="occstatusreason"/>
+		</apex:pageBlockSectionItem>
+	</apex:pageBlockSection>
+	<apex:pageBlockSection id="unit" columns="2"  title="Unit Status" collapsible="false" rendered="{! !readonly}">
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Response Summary Status" for="rss" />
+			<apex:outputField id="rss" value="{!response.Response_Summary_Status__c}" />
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Unit Status" for="unitstatus" />
+			<apex:inputField value="{!response.Workflow_Status__c}" id="unitstatus"/>
+		</apex:pageBlockSectionItem>
+	</apex:pageBlockSection>
+	<apex:pageBlockSection columns="2"  collapsible="false" rendered="{! readonly}">
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Address Type" for="addrtype" />
+			<apex:outputField value="{!unit.Address_Type__c}" id="addrtype"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Address Sub Type" for="addrsubtype" />
+			<apex:outputField value="{!unit.Address_Sub_Type__c}" id="addrsubtype"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Occupancy Status" for="occstatus" />
+			<apex:outputField value="{!response.Occupancy_Status__c}" id="occstatus"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Occupancy Status Reason" for="occstatusreason" />
+			<apex:outputField value="{!response.Occupancy_Status_Reason__c}" id="occstatusreason"/>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Response Summary Status" for="rss" />
+			<apex:outputField id="rss" value="{!response.Response_Summary_Status__c}" />
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Unit Status" for="unitstatus" />
+			<apex:outputField value="{!response.Workflow_Status__c}" id="unitstatus"/>
+		</apex:pageBlockSectionItem>
+	</apex:pageBlockSection>
+</apex:pageBlock>
+
+<!--  this is a required field to allow unit-status to be updated -->
+<div style="display:none">
+<apex:inputField value="{!response.Response_Summary_Status__c}" />
+</div>
+
+</apex:form>
+
+</apex:page>

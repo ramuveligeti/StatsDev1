@@ -1,0 +1,19 @@
+<!--
+/**
+ * @description This Page Invokes Setup_Collection_Instance_Flow through 'Setup Collection Instance' button
+ * @author Ram Veligeti
+ * @date 26.Mar.2015
+ */
+ -->
+<apex:page standardController="Collection__c" extensions="CollectionInstanceFlowCC">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    <flow:interview name="Setup_Collection_Instance_Flow" interview="{!collectionInstanceFlow}" finishLocation="{!FinishLocation}">
+        <apex:param name="varCollectionId" value="{!Collection__c.Id}"/>
+    </flow:interview>
+</apex:page>

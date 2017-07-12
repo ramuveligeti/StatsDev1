@@ -1,0 +1,12 @@
+<apex:page showHeader="true" sidebar="true" standardController="Collection_Instance__c" extensions="DeleteCollectionInstanceController">
+	<apex:form >
+		<apex:pageBlock >
+			<apex:pageMessages />
+
+			<apex:pageBlockButtons >
+	            <apex:commandButton action="{!deleteCollectionInstance}" value="Delete Collection Instance" rendered="{!showDeleteButton}"/>
+	            <apex:commandButton action="{!cancel}" value="Cancel" rendered="{!showCancelButton}"/>
+                </apex:pageBlockButtons>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

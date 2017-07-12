@@ -1,0 +1,33 @@
+<apex:page controller="WorkItemsQueueView">
+    <c:LoadingWindow />
+    <apex:form >
+        <apex:actionpoller rerender="wi_block,wi_table" interval="{!refreshIntervalInSec}" status="loadStatus" />
+        <apex:pageblock title="Work Items Queue" id="wi_block">
+            <apex:commandbutton value="Refresh" rerender="wi_block,wi_table" status="loadStatus" />
+            <apex:pageblocktable value="{!WIs}" var="wi" id="wi_table">
+                <apex:column headervalue="Work Item Number">
+                    <apex:outputlink value="/{!wi.Id}">{!wi.name}</apex:outputlink>
+                </apex:column>
+                <apex:column value="{!wi.Collection_Instance_Name__c}" />
+                <apex:column value="{!wi.UoI_Number__c}" />
+                <apex:column value="{!wi.Unit__c}" />
+                <apex:column value="{!wi.LBU__c}" />
+                <apex:column value="{!wi.Key__c}" />
+                <apex:column value="{!wi.Birth__c}" />
+                <apex:column value="{!wi.Response__c}" />
+                <apex:column value="{!wi.Response_Statisical_Priority__c}" />
+                <apex:column value="{!wi.Response_Behavioual_Priority__c}" />
+                <apex:column headervalue="Owner">
+                    <apex:outputtext value="{!wi.Owner.FirstName} {!wi.Owner.LastName}" rendered="{!wi.Owner.FirstName != Null}" />
+                    <apex:outputtext value="Unallocated Phone Work Items" rendered="{!wi.Owner.FirstName == Null}" />
+                </apex:column>
+                <apex:column value="{!wi.Status__c}" />
+                <apex:column value="{!wi.Appointment__c}" />
+                <apex:column value="{!wi.Follow_up__c}" />
+                <apex:column value="{!wi.Call_Back_Time__c}" />
+                <apex:column value="{!wi.WI_Priority__c}" />
+                <apex:column value="{!wi.CreatedDate}" />
+            </apex:pageblocktable>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>
