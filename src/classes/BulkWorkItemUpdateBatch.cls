@@ -25,6 +25,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
         this.newOwner=ownerId;
 		this.priorityFactor = priorityFactor;
         this.callBackTime = inputCallbackTime;
+        this.workloads = new Set<Id>();
     }
 
 	global BulkWorkItemUpdateBatch(String soql, String status, Id ownerId, Datetime inputCallbackTime) {
@@ -32,6 +33,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
         this.newStatus=status;
         this.newOwner=ownerId;
         this.callBackTime = inputCallbackTime;
+        this.workloads = new Set<Id>();
     }
 
 
@@ -42,6 +44,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
         this.priorityFactor = priorityFactor;
 		this.callBackTime = inputCallbackTime;
 		this.priorityOverride = inputPriorityOverride;
+        this.workloads = new Set<Id>();
     }
     
     
@@ -54,6 +57,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
     	boolean updateOwner=!String.isBlank(newOwner);
         boolean updateWorkItemOwner = !workloads.isEmpty();
 		boolean updateCallBackTime = false;
+        boolean updateWi = false;
 		if(callBackTime != null){updateCallBackTime = true;}
 
     	Set<Id> responseIds = new Set<Id>();
@@ -71,6 +75,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
 			}
     		if(updateOwner){w.ownerid=newowner;}
             if(updateWorkItemOwner && w.OwnerId != w.WorkLoad__r.OwnerId){
+                updateWi = true;
                 w.OwnerId = w.WorkLoad__r.OwnerId;
             }
 			if(updateCallBackTime){w.call_back_time__c=callBackTime;}
@@ -78,7 +83,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
                 responseIds.add(w.Response__c);
             }
     	}
-        if(updateStatus || updateOwner || updateWorkItemOwner){
+        if(updateStatus || updateOwner || (updateWorkItemOwner && updateWi)){
             update workItems;
         }
 

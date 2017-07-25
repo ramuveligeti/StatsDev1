@@ -74,7 +74,7 @@ private class WorkloadTriggerHandlerTest{
             insert workLoadObj;
             Response__c rs = [Select Id from Response__c];
             List<Work_Item__c> workItemList = new List<Work_Item__c>();
-            for(Integer i=0;i<200;i++){
+            for(Integer i=0;i<20;i++){
                 Work_Item__c wi = TestDataHelper.createWorkItem(null, null, null, rs.Id, workLoadObj.Id, false);
                 wi.Work_Item_ExtId__c = 'test'+i;
                 wi.Status__c = (Math.mod(i,2)==0)?'New':'Completed';
