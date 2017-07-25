@@ -8,14 +8,16 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
     global Integer priorityFactor;
 	global Datetime callBackTime;
 	global Boolean priorityOverride;
-
+    global Set<Id> workloads;
     
     global BulkWorkItemUpdateBatch(String soql, String status, Id ownerId) {
         this(soql, status, ownerId, null);
     }
 
-	
-   
+	global BulkWorkItemUpdateBatch(String soql,Set<Id> workloadsToUpdate) {
+		workloads = workloadsToUpdate;
+		query = soql; 
+	}
 
 	global BulkWorkItemUpdateBatch(String soql, String status, Id ownerId, Integer priorityFactor, Datetime inputCallbackTime) {
         this.query=soql;
@@ -23,6 +25,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
         this.newOwner=ownerId;
 		this.priorityFactor = priorityFactor;
         this.callBackTime = inputCallbackTime;
+        this.workloads = new Set<Id>();
     }
 
 	global BulkWorkItemUpdateBatch(String soql, String status, Id ownerId, Datetime inputCallbackTime) {
@@ -30,6 +33,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
         this.newStatus=status;
         this.newOwner=ownerId;
         this.callBackTime = inputCallbackTime;
+        this.workloads = new Set<Id>();
     }
 
 
@@ -40,6 +44,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
         this.priorityFactor = priorityFactor;
 		this.callBackTime = inputCallbackTime;
 		this.priorityOverride = inputPriorityOverride;
+        this.workloads = new Set<Id>();
     }
     
     
@@ -50,7 +55,9 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
     global void execute(Database.BatchableContext BC,Work_Item__c[]workItems) {
     	boolean updateStatus=!String.isBlank(newStatus);
     	boolean updateOwner=!String.isBlank(newOwner);
+        boolean updateWorkItemOwner = !workloads.isEmpty();
 		boolean updateCallBackTime = false;
+        boolean updateWi = false;
 		if(callBackTime != null){updateCallBackTime = true;}
 
     	Set<Id> responseIds = new Set<Id>();
@@ -67,12 +74,16 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
 				}
 			}
     		if(updateOwner){w.ownerid=newowner;}
+            if(updateWorkItemOwner && w.OwnerId != w.WorkLoad__r.OwnerId){
+                updateWi = true;
+                w.OwnerId = w.WorkLoad__r.OwnerId;
+            }
 			if(updateCallBackTime){w.call_back_time__c=callBackTime;}
             if(priorityFactor!=null && !String.isBlank(w.Response__c)){
                 responseIds.add(w.Response__c);
             }
     	}
-        if(updateStatus || updateOwner){
+        if(updateStatus || updateOwner || (updateWorkItemOwner && updateWi)){
             update workItems;
         }
 
