@@ -140,6 +140,9 @@ private class BulkWorkItemIUpdateTest {
         Collection_Instance__c ci = [select id,name, Grouping__c from Collection_Instance__c where Collection_Instance_Code__c='EricBiz'];
         BulkWorkItemUpdateController ctr = new BulkWorkItemUpdateController(new ApexPages.StandardController(ci));
         resetCtr(ctr);
+        ctr.inputPriorityOverride = 'Yes';
+        ctr.priorityFactorInput = '1';
+        //ctr.priorityOverride = true;
         ctr.filterWIT= new List<String>{'Pre-notification','Questionnaire'};
         ctr.inputStatus='TESTING';
 

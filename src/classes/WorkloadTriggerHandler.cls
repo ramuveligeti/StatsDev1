@@ -111,7 +111,7 @@ public class WorkloadTriggerHandler {
     }
     
     //Created below method for Incident 192372 Salesforce CPU problem  
-    //Added this for producing criteria with in () when selected multiple options
+    /*/Added this for producing criteria with in () when selected multiple options
 	private static String genWhereClause(String prefix, String field, List<Id> values){
         if(values == null) {
             return null;
@@ -130,5 +130,5 @@ public class WorkloadTriggerHandler {
         if(String.isBlank(valueString)){return null;}
         return prefix + field + ' in (' + valueString + ') ';
         
-    }
+    }*/
 }

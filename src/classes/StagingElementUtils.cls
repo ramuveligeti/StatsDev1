@@ -62,7 +62,7 @@ public class StagingElementUtils {
 
     Set<String> responseIgnoreFields = new Set<String>{
       'r_response_extid__c',
-      'r_unit_delivery_mode__c',
+      //'r_unit_delivery_mode__c',
       'r_status__c',
       'r_delivery_building_name__c',
       'r_delivery_level_number__c',
