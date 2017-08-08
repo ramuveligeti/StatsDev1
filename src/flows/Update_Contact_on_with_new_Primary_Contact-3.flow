@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <decisions>
+        <name>Is_Contact_Null</name>
+        <label>Is Contact = Null?</label>
+        <locationX>301</locationX>
+        <locationY>221</locationY>
+        <defaultConnectorLabel>[Default Outcome]</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Contact_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varContact</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>loopResponses_clear_Contact</targetReference>
+            </connector>
+            <label>Yes - Contact = Null</label>
+        </rules>
+        <rules>
+            <name>No_Contact_NULL</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varContact</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>loopSet_Primary_Contact</targetReference>
+            </connector>
+            <label>No - Contact &lt;&gt; NULL</label>
+        </rules>
+    </decisions>
+    <description>Where a Primary Contact is added (new or updated) to a Household Unit, update related open Response Records with the name of that Contact.</description>
+    <interviewLabel>Update Contact on with new Primary Contact {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Contact on with new Primary Contact</label>
+    <loops>
+        <name>loopResponses_clear_Contact</name>
+        <label>loopResponses - clear Contact</label>
+        <locationX>446</locationX>
+        <locationY>336</locationY>
+        <assignNextValueToReference>soResponse</assignNextValueToReference>
+        <collectionReference>soResponses</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>ruClear_Primary_Contact_in_Response</targetReference>
+        </nextValueConnector>
+    </loops>
+    <loops>
+        <description>If the Primary Contact variable passed in IS NOT NULL, then set response.Primary Contact to the value in the Primary Contact variable.</description>
+        <name>loopSet_Primary_Contact</name>
+        <label>loopSet Primary Contact</label>
+        <locationX>147</locationX>
+        <locationY>337</locationY>
+        <assignNextValueToReference>soResponse</assignNextValueToReference>
+        <collectionReference>soResponses</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>ruSet_Primary_Contact</targetReference>
+        </nextValueConnector>
+    </loops>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>GetResponses</name>
+        <label>GetResponses</label>
+        <locationX>300</locationX>
+        <locationY>64</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_Contact_Null</targetReference>
+        </connector>
+        <filters>
+            <field>Record_Type_Name__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Census Dwelling</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Response_Summary_Status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Unit_of_Interest_ID__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varHouseholdUnitID</elementReference>
+            </value>
+        </filters>
+        <object>Response__c</object>
+        <outputReference>soResponses</outputReference>
+        <queriedFields>Contact__c</queriedFields>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+    <recordUpdates>
+        <name>ruClear_Primary_Contact_in_Response</name>
+        <label>ruClear Primary Contact in Response</label>
+        <locationX>447</locationX>
+        <locationY>469</locationY>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>soResponse.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </inputAssignments>
+        <object>Response__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>ruSet_Primary_Contact</name>
+        <label>ruSet Primary Contact</label>
+        <locationX>142</locationX>
+        <locationY>465</locationY>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>soResponse.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <elementReference>varContact</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Response__c</object>
+    </recordUpdates>
+    <startElementReference>GetResponses</startElementReference>
+    <variables>
+        <description>Single Response record</description>
+        <name>soResponse</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Response__c</objectType>
+    </variables>
+    <variables>
+        <description>Response record set</description>
+        <name>soResponses</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Response__c</objectType>
+    </variables>
+    <variables>
+        <description>The Contact ID passed in from Process Builder</description>
+        <name>varContact</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <description>Get Unit ID from process builder</description>
+        <name>varHouseholdUnitID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

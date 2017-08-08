@@ -73,7 +73,8 @@ public class SpecialArrangementProcessor {
                 Contact__r.Road_Number__c, Contact__r.Road_Number_Alpha__c, 
                 Contact__r.Road_Type__c, Contact__r.Rural_Delivery_Number__c, 
                 Contact__r.Suburb__c, Contact__r.Street_Road_PO_Box__c, 
-                Contact__r.Suburb_Rural_Delivery__c, Contact__r.Town_or_City__c, Contact__r.Has_Address__c
+                Contact__r.Suburb_Rural_Delivery__c, Contact__r.Town_or_City__c, Contact__r.Has_Address__c,
+				Contact__r.Unit_Type__c //added this field as part of 3831 by Ramu Veligeti (Fronde)
                 From Special_Arrangement__c 
                 where (Collection__c = :ci.collection__c and Status__c = 'Active') OR (Status__c = 'Active' and recordTypeId = :CCSId )
                 order by recordtypeid
@@ -358,6 +359,7 @@ public class SpecialArrangementProcessor {
 		public override boolean apply(Special_Arrangement__c sa,Response__c r){
 			// this is period based
 			if(r.instrument__c == sa.instrument_name__c){
+				system.debug('sa.Contact__c=='+sa.Contact__c);
 				r.Contact__c=sa.Contact__c;
 				ResponseUtil.setResponseDetailsFromContact(r, sa.Contact__r, null);// will not set care-of
 				return true;

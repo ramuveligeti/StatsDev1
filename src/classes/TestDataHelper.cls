@@ -394,7 +394,8 @@ public class TestDataHelper {
                                                     'C_Address_ID__c'=> null,
                                                     'U_Other_Address_Type__c' => null,
                                                     'WI_Work_Item_Type__c' => 'Address canvassing',
-                                                    'U_Website__c' => 'test.com'
+                                                    'U_Website__c' => 'test.com',
+                                                    'R_Unit_Delivery_Mode__c' => null
                                         };
         Staging_Element__c stagingElement = (Staging_Element__c)SmartFactory.createSObject('Staging_Element__c', imValues);
         stagingElement.workload_ownerid__c = null;
@@ -763,6 +764,11 @@ public class TestDataHelper {
         s3.Name = 'workItemExtract.notificationEmail';
         s3.Value__c = 'test@test.test';
         ss.add(s3);
+
+        SystemSettings__c s4 = new SystemSettings__c();
+        s4.Name = 'batchSize.workitemOwnerUpdate';
+        s4.Value__c = '200';
+        ss.add(s4);
 
         insert ss;
     }

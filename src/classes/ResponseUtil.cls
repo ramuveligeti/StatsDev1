@@ -33,6 +33,7 @@ public class ResponseUtil {
                 resp.Street_Road_PO_Box__c = person.Street_Road_PO_Box__c;
                 resp.Suburb_Rural_Delivery__c = person.Suburb_Rural_Delivery__c;
                 resp.Delivery_Town_or_City__c = person.Town_or_City__c;
+                resp.Unit_Type__c = person.Unit_Type__c;
 
             }
         }
@@ -51,6 +52,8 @@ public class ResponseUtil {
 	        response.Delivery_Suburb__c = unit.Suburb__c;
 	        response.Delivery_Town_or_City__c = unit.Town_or_City__c;
 	        response.Delivery_Postcode__c = unit.Postcode__c;
+            response.Road_Direction__c = unit.Road_Direction__c;
+            response.Unit_Type__c = unit.Unit_Type__c;
 	        
 	        // 4 line address
 	        response.Building_Level_Unit__c = unit.Building_Level_Unit__c;

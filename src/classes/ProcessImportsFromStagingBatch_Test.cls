@@ -3,6 +3,9 @@ private class ProcessImportsFromStagingBatch_Test {
 
     @TestSetup static void dataSetup(){
         TestDataHelper.createResponseProperties();
+        System_Update__c su = new System_Update__c();
+        su.Debug_Enabled__c = true;
+        insert su;
     }
     
     @isTest static void testExecute(){
@@ -133,6 +136,7 @@ private class ProcessImportsFromStagingBatch_Test {
         Artefact__c artefact = TestDataHelper.createArtefact(collection.Id, false);
         artefact.Name = 'ACODE';
         artefact.Artefact_Code__c = 'ACODE';
+        //artefact.Delivery_Modes__c = 'Post; Email';
         insert artefact;
         List<Artefact__c> artefacts = [select Name, Collection_Modes__c,Artefact_Code__c, Artefact_ExtId__c,Collection__c from Artefact__c where Collection__c = :collectionInstance.Id];
         collectionInstance = [select Collection_Instance_Code__c,Delivery_Mode__c, Grouping__c,Contextual_Mappings__c, Collection__r.Collection_Code__c, RecordType.Name,Collection__r.Id,Primary_Mode__c 
@@ -673,6 +677,7 @@ private class ProcessImportsFromStagingBatch_Test {
         se.U_Unit_of_Interest_Id__c = unit.Unit_of_Interest_ID__c;
         se.R_Response_ExtId__c = 'zzz';
         se.R_Unit_Association__c = unit.Unit_of_Interest_ID__c;
+        se.U_Unit_Number__c = '12';
         insert se;
 
 

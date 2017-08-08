@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Update Variation Status to Initial Approval Completed, if it meets the criteria</description>
+    <label>Update Variation Status to Initial Approval Completed</label>
+    <processType>Workflow</processType>
+</Flow>

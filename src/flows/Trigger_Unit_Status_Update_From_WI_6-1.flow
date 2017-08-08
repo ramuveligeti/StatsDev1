@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <processMetadataValues>
+            <name>apexSelection</name>
+            <value>
+                <stringValue>Do Nothing</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_1_A1</name>
+        <label>Do Nothing</label>
+        <locationX>100</locationX>
+        <locationY>200</locationY>
+        <actionName>DoNothing</actionName>
+        <actionType>apex</actionType>
+    </actionCalls>
+    <actionCalls>
+        <processMetadataValues>
+            <name>apexSelection</name>
+            <value>
+                <stringValue>Do Nothing</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_3_A1</name>
+        <label>Do Nothing</label>
+        <locationX>300</locationX>
+        <locationY>200</locationY>
+        <actionName>DoNothing</actionName>
+        <actionType>apex</actionType>
+    </actionCalls>
+    <assignments>
+        <name>myVariable_waitStartTimeAssignment</name>
+        <label>myVariable_waitStartTimeAssignment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>myVariable_waitStartTimeVariable</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>myDecision</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision</name>
+        <label>myDecision</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_1</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_1_A1</targetReference>
+            </connector>
+            <label>IS NEW</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>5.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision10</name>
+        <label>myDecision10</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_11</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_11</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_11_A1</targetReference>
+            </connector>
+            <label>Transient Visit Completed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision2</name>
+        <label>myDecision2</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision4</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_3</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <processMetadataValues>
+                    <name>inputDataType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>leftHandSideType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>operatorDataType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>rightHandSideType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <leftValueReference>myVariable_current.Response_Record_Type__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Census Dwelling</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_3_A1</targetReference>
+            </connector>
+            <label>Is not Census Dwelling?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>2.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision4</name>
+        <label>myDecision4</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision6</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_5</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_5</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_5_A1</targetReference>
+            </connector>
+            <label>Special Visit in progress</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>3.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision6</name>
+        <label>myDecision6</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision8</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_7</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_7</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_7_A1</targetReference>
+            </connector>
+            <label>Special Visit Completed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>4.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision8</name>
+        <label>myDecision8</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision10</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_9</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_9</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_9_A1</targetReference>
+            </connector>
+            <label>Special visit Refusal</label>
+        </rules>
+    </decisions>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>OR(ISNEW() , ISNULL([Work_Item__c].Outcome__c ))</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_1</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(ISNEW() , ISNULL({!myVariable_current.Outcome__c} ))</expression>
+    </formulas>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>AND(
+ISPICKVAL([Work_Item__c].Work_Item_Type__c,  &quot;Transient&quot;),
+ISCHANGED([Work_Item__c].Outcome__c),
+OR(
+[Work_Item__c].Outcome__c = &quot;Contact: Left Pack/forms&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Safety concerns&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Refusal - Left Pack/forms&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Refusal - No materials left&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Unable to communicate&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Assisted Completion - Online&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Assisted Completion - Paper&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Collected Forms&quot;,
+[Work_Item__c].Outcome__c = &quot;No Contact: Left Pack/forms&quot;
+)
+)</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_11</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+ISPICKVAL({!myVariable_current.Work_Item_Type__c},  &quot;Transient&quot;),
+ISCHANGED({!myVariable_current.Outcome__c}),
+OR(
+{!myVariable_current.Outcome__c} = &quot;Contact: Left Pack/forms&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Safety concerns&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Refusal - Left Pack/forms&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Refusal - No materials left&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Unable to communicate&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Assisted Completion - Online&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Assisted Completion - Paper&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Collected Forms&quot;,
+{!myVariable_current.Outcome__c} = &quot;No Contact: Left Pack/forms&quot;
+)
+)</expression>
+    </formulas>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>AND(
+ISPICKVAL([Work_Item__c].Work_Item_Type__c,  &quot;Special&quot;),
+ISCHANGED([Work_Item__c].Outcome__c),
+OR(
+[Work_Item__c].Outcome__c = &quot;Contact: Left Pack/forms&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Left Access Code&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Reminder&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Collected Forms, left extra forms&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Safety concerns&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Unable to communicate&quot;,
+[Work_Item__c].Outcome__c = &quot;Contact: Phone Reminder&quot;,
+[Work_Item__c].Outcome__c = &quot;No Contact: Left Pack/forms&quot;,
+[Work_Item__c].Outcome__c = &quot;No Contact: Left Access Code&quot;,
+[Work_Item__c].Outcome__c = &quot;No Contact: Left Reminder&quot;,
+[Work_Item__c].Outcome__c = &quot;No Contact: Safety concerns&quot;,
+[Work_Item__c].Outcome__c = &quot;No Contact: Unable to access dwelling&quot;
+)
+)</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_5</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+ISPICKVAL({!myVariable_current.Work_Item_Type__c},  &quot;Special&quot;),
+ISCHANGED({!myVariable_current.Outcome__c}),
+OR(
+{!myVariable_current.Outcome__c} = &quot;Contact: Left Pack/forms&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Left Access Code&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Reminder&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Collected Forms, left extra forms&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Safety concerns&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Unable to communicate&quot;,
+{!myVariable_current.Outcome__c} = &quot;Contact: Phone Reminder&quot;,
+{!myVariable_current.Outcome__c} = &quot;No Contact: Left Pack/forms&quot;,
+{!myVariable_current.Outcome__c} = &quot;No Contact: Left Access Code&quot;,
+{!myVariable_current.Outcome__c} = &quot;No Contact: Left Reminder&quot;,
+{!myVariable_current.Outcome__c} = &quot;No Contact: Safety concerns&quot;,
+{!myVariable_current.Outcome__c} = &quot;No Contact: Unable to access dwelling&quot;
+)
+)</expression>
+    </formulas>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>AND(
+ISPICKVAL([Work_Item__c].Work_Item_Type__c,  &quot;Special&quot;),
+ISCHANGED([Work_Item__c].Outcome__c),
+OR(
+[Work_Item__c].Outcome__c = &quot;Contact: Collected Forms&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Advised Completed - Online&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Advised Completed - Paper&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: New household at dwelling&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Assisted Completion - Online&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Assisted Completion - Paper&quot; 
+)
+)</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_7</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+ISPICKVAL({!myVariable_current.Work_Item_Type__c},  &quot;Special&quot;),
+ISCHANGED({!myVariable_current.Outcome__c}),
+OR(
+{!myVariable_current.Outcome__c} = &quot;Contact: Collected Forms&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Advised Completed - Online&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Advised Completed - Paper&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: New household at dwelling&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Assisted Completion - Online&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Assisted Completion - Paper&quot; 
+)
+)</expression>
+    </formulas>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>AND(
+ISPICKVAL([Work_Item__c].Work_Item_Type__c,  &quot;Special&quot;),
+ISCHANGED([Work_Item__c].Outcome__c),
+OR(
+[Work_Item__c].Outcome__c = &quot;Contact: Refusal - Left Pack/forms&quot;, 
+[Work_Item__c].Outcome__c = &quot;Contact: Refusal - No materials left&quot; 
+)
+)</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_9</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+ISPICKVAL({!myVariable_current.Work_Item_Type__c},  &quot;Special&quot;),
+ISCHANGED({!myVariable_current.Outcome__c}),
+OR(
+{!myVariable_current.Outcome__c} = &quot;Contact: Refusal - Left Pack/forms&quot;, 
+{!myVariable_current.Outcome__c} = &quot;Contact: Refusal - No materials left&quot; 
+)
+)</expression>
+    </formulas>
+    <interviewLabel>Trigger_Unit_Status_Update_From_WI_6-1_InterviewLabel</interviewLabel>
+    <label>Trigger Unit Status Update From WI - 6</label>
+    <processMetadataValues>
+        <name>ObjectType</name>
+        <value>
+            <stringValue>Work_Item__c</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>ObjectVariable</name>
+        <value>
+            <elementReference>myVariable_current</elementReference>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OldObjectVariable</name>
+        <value>
+            <elementReference>myVariable_old</elementReference>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>TriggerType</name>
+        <value>
+            <stringValue>onAllChanges</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Workflow</processType>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[Work_Item__c].Response</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_11_A1</name>
+        <label>Set US to Special Visit Completed</label>
+        <locationX>1100</locationX>
+        <locationY>200</locationY>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Response__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Unit Status</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Workflow_Status__c</field>
+            <value>
+                <stringValue>Special Visit Completed</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Response__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[Work_Item__c].Response</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_5_A1</name>
+        <label>Set US to Special Visit in Progress</label>
+        <locationX>500</locationX>
+        <locationY>200</locationY>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Response__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Unit Status</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Workflow_Status__c</field>
+            <value>
+                <stringValue>Special Visit in Progress</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Response__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[Work_Item__c].Response</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_7_A1</name>
+        <label>Set US to Special Visit Completed</label>
+        <locationX>700</locationX>
+        <locationY>200</locationY>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Response__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Unit Status</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Workflow_Status__c</field>
+            <value>
+                <stringValue>Special Visit Completed</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Response__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[Work_Item__c].Response</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_9_A1</name>
+        <label>Set US to Refused</label>
+        <locationX>900</locationX>
+        <locationY>200</locationY>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Response__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Unit Status</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Workflow_Status__c</field>
+            <value>
+                <stringValue>Refused</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Response__c</object>
+    </recordUpdates>
+    <startElementReference>myVariable_waitStartTimeAssignment</startElementReference>
+    <variables>
+        <name>myVariable_current</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Work_Item__c</objectType>
+    </variables>
+    <variables>
+        <name>myVariable_old</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Work_Item__c</objectType>
+    </variables>
+    <variables>
+        <name>myVariable_waitStartTimeVariable</name>
+        <dataType>DateTime</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Flow.CurrentDateTime</elementReference>
+        </value>
+    </variables>
+</Flow>

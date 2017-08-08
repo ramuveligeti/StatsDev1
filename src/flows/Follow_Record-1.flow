@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Assign a user to follow a record in Chatter</description>
+    <interviewLabel>Follow Record {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Follow Record</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>rcAdd_follower_to_record</name>
+        <label>rcAdd follower to record</label>
+        <locationX>273</locationX>
+        <locationY>99</locationY>
+        <inputAssignments>
+            <field>ParentId</field>
+            <value>
+                <elementReference>varRecord</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>SubscriberId</field>
+            <value>
+                <elementReference>varSubscriber</elementReference>
+            </value>
+        </inputAssignments>
+        <object>EntitySubscription</object>
+    </recordCreates>
+    <startElementReference>rcAdd_follower_to_record</startElementReference>
+    <variables>
+        <description>ID of the record to be followed.</description>
+        <name>varRecord</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varSubscriber</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

@@ -12,6 +12,8 @@
         "ApexComponent",
         "ApexPage",
         "ApexTrigger",
+        "Flow",
+        "FlowDefinition",
         "StaticResource"
     ]
 }

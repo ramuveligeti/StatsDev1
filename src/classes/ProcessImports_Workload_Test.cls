@@ -5,6 +5,7 @@ private with sharing class ProcessImports_Workload_Test {
 // assumption is that the Unit and the response already exists
 	@testSetup
 	private static void setupTest(){
+		TestDataHelper.createSystemSettings();
 		insert new Response_API_Properties__c[]{
 			 new Response_API_Properties__c(Name='response.status.closed',value__c='Completed'),
 			 new Response_API_Properties__c(Name='activity.status.closed',value__c='Completed'),
@@ -270,11 +271,11 @@ private with sharing class ProcessImports_Workload_Test {
 			}
 			csv.add(testfileload);
 		}
-		insert csv;
         
 		Test.startTest();
-		ProcessImportsFromStagingBatch instance = new ProcessImportsFromStagingBatch(colIns.Id);
-		Database.executeBatch(instance,200);		
+		insert csv;
+		//ProcessImportsFromStagingBatch instance = new ProcessImportsFromStagingBatch(colIns.Id);
+		//Database.executeBatch(instance,200);		
         Test.stopTest();
         
 		Staging_Element__c[] vFL=[select errors__c, failed__c from Staging_Element__c where id in :csv];

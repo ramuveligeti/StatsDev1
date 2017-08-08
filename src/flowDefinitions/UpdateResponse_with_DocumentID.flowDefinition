@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <activeVersionNumber>5</activeVersionNumber>
+    <description>Allocate documentID for response which does not have, when workitem is created by telnet user through mulesoft</description>
+    <masterLabel>Update Response with DocumentID</masterLabel>
+</FlowDefinition>

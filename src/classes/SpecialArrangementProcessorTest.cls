@@ -293,7 +293,7 @@ private class SpecialArrangementProcessorTest {
 			resp.recordTypeId=rRT;
 			resp.Status__c = 'New';
 			resp.Unit_Type__c = null;
-			resp.Delivery_Unit_Number__c = null;
+			resp.Delivery_Unit_Number__c = '12';
 			resp.Response_ExtId__c = 'EricTestwhatever'+i;
 			resp.Workflow_status__c=null;
 			resp.Document_Number__c = null;
@@ -406,7 +406,7 @@ private class SpecialArrangementProcessorTest {
 			resp.recordTypeId=rRT;
 			resp.Status__c = 'New';
 			resp.Unit_Type__c = null;
-			resp.Delivery_Unit_Number__c = null;
+			resp.Delivery_Unit_Number__c = '12';
 			resp.Response_ExtId__c = 'EricTestwhatever'+i;
 			resp.Workflow_status__c=null;
 			resp.Document_Number__c = null;

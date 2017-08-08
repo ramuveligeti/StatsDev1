@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This flow combines CountKeyResponses, Count Net keys and Count Net Sample Size flows into 1 because all 3 were looping through responses individually could hit govenor limit of salesforce.</description>
+    <masterLabel>Count Responses For Collection Instance</masterLabel>
+</FlowDefinition>

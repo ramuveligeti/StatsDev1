@@ -62,7 +62,7 @@ public class StagingElementUtils {
 
     Set<String> responseIgnoreFields = new Set<String>{
       'r_response_extid__c',
-      //'r_unit_delivery_mode__c',
+      //'r_unit_delivery_mode__c', Commented by Ramu Veligeti, as part of fixing 3834
       'r_status__c',
       'r_delivery_building_name__c',
       'r_delivery_level_number__c',
@@ -189,7 +189,7 @@ public class StagingElementUtils {
             Contact__r.Road_Number__c, Contact__r.Road_Number_Alpha__c, 
             Contact__r.Road_Type__c, Contact__r.Rural_Delivery_Number__c, 
             Contact__r.Suburb__c, Contact__r.Street_Road_PO_Box__c, 
-            Contact__r.Suburb_Rural_Delivery__c, Contact__r.Town_or_City__c, Contact__r.Has_Address__c
+            Contact__r.Suburb_Rural_Delivery__c, Contact__r.Town_or_City__c, Contact__r.Has_Address__c, Contact__r.Unit_Type__c
           from Contact_Roles__r where Primary_Contact__c = true and Collection__c = :collectionInstance.Collection__c limit 1) 
         from Unit__c where Unit_of_Interest_ID__c in :existingUnits.keySet()]){
 
@@ -1223,7 +1223,7 @@ public class StagingElementUtils {
             Contact__r.Road_Number__c, Contact__r.Road_Number_Alpha__c, 
             Contact__r.Road_Type__c, Contact__r.Rural_Delivery_Number__c, 
             Contact__r.Suburb__c, Contact__r.Street_Road_PO_Box__c, 
-            Contact__r.Suburb_Rural_Delivery__c, Contact__r.Town_or_City__c, Contact__r.Has_Address__c
+            Contact__r.Suburb_Rural_Delivery__c, Contact__r.Town_or_City__c, Contact__r.Has_Address__c, Contact__r.Unit_Type__c
           from Contact_Roles__r where Primary_Contact__c = true and Collection__c = :collectionIds limit 1) 
         from Unit__c where Unit_of_Interest_ID__c in :unitExtIds];
 	   
@@ -1320,7 +1320,8 @@ public class StagingElementUtils {
           Contact_Role__r.Unit_of_interest_Id__r.Unit_of_interest_Id__c,
           Contact_Role__r.Preferred_Collection_Mode__c,
           Contact_Role__r.Preferred_Delivery_Mode__c,
-          Contact_Role__r.Contact__r.company_name__c
+          Contact_Role__r.Contact__r.company_name__c,
+          Contact_Role__r.Contact__r.Unit_Type__c
         from Contact_Role_Unit__c
         where   
           Active__c=true and

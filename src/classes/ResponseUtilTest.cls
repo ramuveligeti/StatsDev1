@@ -35,7 +35,8 @@ public class ResponseUtilTest{
 				Road_Type__c,
 				Rural_Delivery_Number__c,
 				Street_Road_PO_Box__c,
-				Suburb_Rural_Delivery__c
+				Suburb_Rural_Delivery__c,
+				Unit_Type__c
 			from Contact where Id = :spider.Id
 		];
 
@@ -93,7 +94,8 @@ public class ResponseUtilTest{
 				Road_Type__c,
 				Rural_Delivery_Number__c,
 				Street_Road_PO_Box__c,
-				Suburb_Rural_Delivery__c
+				Suburb_Rural_Delivery__c,
+				Unit_Type__c
 			from Contact where Id = :spider.Id
 		];
 		
