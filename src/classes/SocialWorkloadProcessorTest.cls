@@ -3,7 +3,10 @@ private class SocialWorkloadProcessorTest {
 	
 	@TestSetup
 	public static void setupData(){
-		TestDataHelper.createSystemSettings();
+        insert new SystemSettings__c[]{
+			new SystemSettings__c(Name = 'batchSize.workitemOwnerUpdate',Value__c = '200')
+		};
+
         TestDataHelper.createResponseProperties();
 
         System_Update__c su = System_Update__c.getOrgDefaults();

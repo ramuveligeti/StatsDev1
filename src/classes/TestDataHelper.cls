@@ -765,11 +765,6 @@ public class TestDataHelper {
         s3.Value__c = 'test@test.test';
         ss.add(s3);
 
-        SystemSettings__c s4 = new SystemSettings__c();
-        s4.Name = 'batchSize.workitemOwnerUpdate';
-        s4.Value__c = '200';
-        ss.add(s4);
-
         insert ss;
     }
 

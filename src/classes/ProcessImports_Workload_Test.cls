@@ -5,7 +5,9 @@ private with sharing class ProcessImports_Workload_Test {
 // assumption is that the Unit and the response already exists
 	@testSetup
 	private static void setupTest(){
-		TestDataHelper.createSystemSettings();
+		insert new SystemSettings__c[]{
+			new SystemSettings__c(Name = 'batchSize.workitemOwnerUpdate',Value__c = '200')
+		};
 		insert new Response_API_Properties__c[]{
 			 new Response_API_Properties__c(Name='response.status.closed',value__c='Completed'),
 			 new Response_API_Properties__c(Name='activity.status.closed',value__c='Completed'),
