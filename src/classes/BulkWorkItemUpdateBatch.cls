@@ -14,6 +14,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
         this(soql, status, ownerId, null);
     }
 
+    //GTA 114324 - Added by Ramu Velgeti to assign more than one workload’s owner to work items 
 	global BulkWorkItemUpdateBatch(String soql,Set<Id> workloadsToUpdate) {
 		workloads = workloadsToUpdate;
 		query = soql; 
@@ -55,7 +56,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
     global void execute(Database.BatchableContext BC,Work_Item__c[]workItems) {
     	boolean updateStatus=!String.isBlank(newStatus);
     	boolean updateOwner=!String.isBlank(newOwner);
-        boolean updateWorkItemOwner = !workloads.isEmpty();
+        boolean updateWorkItemOwner = !workloads.isEmpty(); //GTA 114324 - Added by Ramu Velgeti to assign more than one workload’s owner to work items 
 		boolean updateCallBackTime = false;
         boolean updateWi = false;
 		if(callBackTime != null){updateCallBackTime = true;}
@@ -74,6 +75,7 @@ global class BulkWorkItemUpdateBatch implements Database.Batchable<sObject>, Dat
 				}
 			}
     		if(updateOwner){w.ownerid=newowner;}
+            //GTA 114324 - Added by Ramu Velgeti to assign more than one workload’s owner to work items 
             if(updateWorkItemOwner && w.OwnerId != w.WorkLoad__r.OwnerId){
                 updateWi = true;
                 w.OwnerId = w.WorkLoad__r.OwnerId;

@@ -48,6 +48,7 @@ public class WorkloadTriggerHandler {
     	try {
             //updated below line for Incident 192372 Salesforce CPU problem  
     		//update wis;	
+            //GTA 114324 - Added by Ramu Velgeti to assign more than one workload’s owner to work items 
             BulkWorkItemUpdate(workLoadIds);
     	} catch (DMLException ex) {
     		for (Workload__c workload:newMap.values()) {
@@ -82,6 +83,7 @@ public class WorkloadTriggerHandler {
     }
     
     //Created below method for Incident 192372 Salesforce CPU problem  
+    //GTA 114324 - Modified by Ramu Velgeti to assign more than one workload’s owner to work items 
     public static void BulkWorkItemUpdate(Set<Id> workLoadIds){
         Id censusCollectionRecordTypeId = Schema.SObjectType.Collection__c.getRecordTypeInfosByName().get('Census').getRecordTypeId();
         Group completedQueue = [select Id from Group where Type='Queue' and DeveloperName='Completed_Work'];
@@ -105,6 +107,7 @@ public class WorkloadTriggerHandler {
         system.debug('Work items query is : ' + soql);
 
         //Id batchId;
+        //GTA 114324 - Added by Ramu Velgeti to assign more than one workload’s owner to work items 
         BulkWorkItemUpdateBatch batch = new BulkWorkItemUpdateBatch(soql,workLoadIds);
         integer batchSize = SystemSettings.getIntegerValue('batchSize.workitemOwnerUpdate');
         Id batchId = Database.executeBatch(batch, batchSize);
