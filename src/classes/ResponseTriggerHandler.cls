@@ -206,10 +206,13 @@ public with sharing class ResponseTriggerHandler {
 					markDFStatuses(primaryDF, 'Completed');
 					completedDFs.add(primaryDF.id);
 				}else if(completedIF>0||completedDF>0){
-					primaryDF.Response_Summary_Status__c='Partial';
+					primaryDF.Response_Summary_Status__c='Partial - DF'; //Added by Ramu Veligeti for ECP-3908 on 09-Aug-17; If Individual forms less than No.of occupants set to Partial - DF
+					//primaryDF.Response_Summary_Status__c='Partial'; //Commented by Ramu Veligeti for ECP-3908 on 09-Aug-17
 					markDFStatuses(primaryDF, 'Partial');
 					// ECP-3575 - remove partial logic on updating outstanding workitems
 					//completeOrPartilDFs.add(primaryDF.id);
+				}else if(completedDF==0){ //Added else by Ramu Veligeti for ECP-3908 on 09-Aug-17; If Individual forms recevied but no Dwelling forms set to Partial - No DF
+					primaryDF.Response_Summary_Status__c='Partial - No DF';
 				}else{
 					primaryDF.Response_Summary_Status__c='No Response';
 				}
@@ -218,7 +221,8 @@ public with sharing class ResponseTriggerHandler {
 				if(completedDF==0&&completedIF==0){
 					primaryDF.Response_Summary_Status__c='No Response';
 				} else {
-					primaryDF.Response_Summary_Status__c='Partial';
+					primaryDF.Response_Summary_Status__c='Partial - DF'; //Added by Ramu Veligeti for ECP-3908 on 09-Aug-17; If No.of occupants is null set to Partial - DF
+					//primaryDF.Response_Summary_Status__c='Partial';  //Commented by Ramu Veligeti for ECP-3908 on 09-Aug-17
 					if(completedDF>0){
 						markDFStatuses(primaryDF, 'Partial');
 					}
