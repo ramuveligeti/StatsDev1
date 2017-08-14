@@ -200,36 +200,39 @@ public with sharing class ResponseTriggerHandler {
 			primaryDF.Number_of_Paper_Individual_Forms__c=paperIF;
 			// we will not update the number_of_occupants as part of this... it comes through differently
 			// this is ECP-1390 logic, setting the status on the primary response
-			if(primaryDF.Number_of_Occupants__c!=null&&primaryDF.Number_of_Occupants__c>0){
+			Decimal occupants = primaryDF.Number_of_Occupants__c==null?0:primaryDF.Number_of_Occupants__c;
+			/*if(primaryDF.Number_of_Occupants__c!=null&&primaryDF.Number_of_Occupants__c>0){ //Commented by Ramu Veligeti for ECP-3908 on 09-Aug-17
 				if(primaryDF.Number_of_Occupants__c<=completedIF && completedDF>0){
 					primaryDF.Response_Summary_Status__c='Completed';
 					markDFStatuses(primaryDF, 'Completed');
+					completedDFs.add(primaryDF.id);*/
+				if(occupants<=completedIF && completedDF>0){ //Added by Ramu Veligeti for ECP-3908 on 09-Aug-17;
+					primaryDF.Response_Summary_Status__c='Completed';
+					markDFStatuses(primaryDF, 'Completed');
 					completedDFs.add(primaryDF.id);
-				}else if(completedIF>0||completedDF>0){
-					primaryDF.Response_Summary_Status__c='Partial - DF'; //Added by Ramu Veligeti for ECP-3908 on 09-Aug-17; If Individual forms less than No.of occupants set to Partial - DF
+				}else if(completedIF==0 && completedDF>0){
+					primaryDF.Response_Summary_Status__c='Partial - DF'; //Added by Ramu Veligeti for ECP-3908 on 09-Aug-17; If Dwelling forms received but no Individual forms then set to Partial - DF
 					//primaryDF.Response_Summary_Status__c='Partial'; //Commented by Ramu Veligeti for ECP-3908 on 09-Aug-17
 					markDFStatuses(primaryDF, 'Partial');
 					// ECP-3575 - remove partial logic on updating outstanding workitems
 					//completeOrPartilDFs.add(primaryDF.id);
-				}else if(completedDF==0){ //Added else by Ramu Veligeti for ECP-3908 on 09-Aug-17; If Individual forms recevied but no Dwelling forms set to Partial - No DF
+				}else if(completedDF==0 && completedIF>0){ //Added else by Ramu Veligeti for ECP-3908 on 09-Aug-17; If Individual forms recevied but no Dwelling forms set to Partial - No DF
 					primaryDF.Response_Summary_Status__c='Partial - No DF';
+					markDFStatuses(primaryDF, 'Partial');
 				}else{
 					primaryDF.Response_Summary_Status__c='No Response';
 				}
-			}else{
+			/*}else{ //Commented by Ramu Veligeti for ECP-3908 on 09-Aug-17
 				// set to partial if we don't know the number of occupant
 				if(completedDF==0&&completedIF==0){
 					primaryDF.Response_Summary_Status__c='No Response';
 				} else {
-					primaryDF.Response_Summary_Status__c='Partial - DF'; //Added by Ramu Veligeti for ECP-3908 on 09-Aug-17; If No.of occupants is null set to Partial - DF
-					//primaryDF.Response_Summary_Status__c='Partial';  //Commented by Ramu Veligeti for ECP-3908 on 09-Aug-17
-					if(completedDF>0){
-						markDFStatuses(primaryDF, 'Partial');
-					}
+					primaryDF.Response_Summary_Status__c='Partial';  
+					markDFStatuses(primaryDF, 'Partial');
 					// ECP-3575 - remove partial logic on updating outstanding workitems
 					//completeOrPartilDFs.add(primaryDF.id);
 				}
-			}
+			}*/
 			
 			Work_Item__c wi=new work_item__c(Response__c=primaryDF.id);
 			if(primaryDF.work_items__r.size()>0){

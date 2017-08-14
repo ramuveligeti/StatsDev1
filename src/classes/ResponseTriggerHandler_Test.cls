@@ -415,7 +415,7 @@ private class ResponseTriggerHandler_Test {
             system.assertEquals(3, vResp.Number_of_Paper_Individual_Forms__c);
             system.assertEquals(1,vResp.Number_of_Dwelling_Forms_Received__c);
             system.assertEquals(0,vResp.Number_of_Paper_Dwelling_Forms__c);
-            system.assertEquals('Partial - DF', vResp.Response_Summary_Status__c); // due to no occupant number
+            system.assertEquals('Completed', vResp.Response_Summary_Status__c); // due to no occupant number
 
         }
     }
@@ -487,7 +487,7 @@ private class ResponseTriggerHandler_Test {
             system.assertEquals(1,vResp.Number_of_Dwelling_Forms_Received__c);
             system.assertEquals(2, vResp.Number_of_Paper_Individual_Forms__c);
             system.assertEquals(1,vResp.Number_of_Paper_Dwelling_Forms__c);
-            system.assertEquals('Partial - DF', vResp.Response_Summary_Status__c);
+            system.assertEquals('No Response', vResp.Response_Summary_Status__c);
 
         }
     }
@@ -553,7 +553,7 @@ private class ResponseTriggerHandler_Test {
 			vResp = [select Id,Response_Summary_Status__c,Number_of_Individual_Forms_Received__c,Number_of_Dwelling_Forms_Received__c from Response__c where ID=:resp.id];
             system.assertEquals(2,vResp.Number_of_Individual_Forms_Received__c);
             system.assertEquals(1,vResp.Number_of_Dwelling_Forms_Received__c);
-            system.assertEquals('Partial - DF', vResp.Response_Summary_Status__c);
+            system.assertEquals('No Response', vResp.Response_Summary_Status__c);
 
         }
     }
@@ -796,7 +796,7 @@ private class ResponseTriggerHandler_Test {
 		Response__c vResp = [select Id,Response_Summary_Status__c,Number_of_Individual_Forms_Received__c,Number_of_Dwelling_Forms_Received__c from Response__c where ID=:resp.id];
         system.assertEquals(4, vResp.Number_of_Individual_Forms_Received__c);
         system.assertEquals(0, vResp.Number_of_Dwelling_Forms_Received__c);
-        system.assertEquals('Partial - DF', vResp.Response_Summary_Status__c);
+        system.assertEquals('Partial - No DF', vResp.Response_Summary_Status__c);
         
         Work_Item__c vWI = [select status__c from Work_Item__c where response__c = :resp.id];
         system.assertEquals('New', vWI.status__c);
@@ -834,7 +834,7 @@ private class ResponseTriggerHandler_Test {
         wi.Work_Item_ExtId__c = 'test'+system.now().getTime();
         wi.Delivery_Mode__c = 'Post';
         wi.Status__c = 'New';
-        wi.Work_Item_Type__c = 'Refusal'; // using Non-response follow-up causes flow error
+        wi.Work_Item_Type__c = 'Refusal Letter 1'; // using Non-response follow-up causes flow error
         insert wi;
 		            
 		Test.startTest();

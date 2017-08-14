@@ -481,7 +481,7 @@ system.debug(logginglevel.error, 'creating mark-in');
 		system.assert(vResp.Mark_in__c);
 		system.assertEquals(3,vResp.Number_of_Occupants__c);
 		system.assertEquals('completed',vResp.Status__c.toLowerCase());
-		system.assertEquals('partial',vResp.Response_Summary_status__c.toLowerCase());
+		system.assertEquals('no response',vResp.Response_Summary_status__c.toLowerCase());
 	}
 
 	@isTest static void testMethod_simultaneous_requests_Occu_DF(){
