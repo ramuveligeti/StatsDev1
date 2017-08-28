@@ -466,7 +466,7 @@ public class TestDataHelper {
         response.Delivery_Postcode__c = '12';
         response.Delivery_Road_Number__c = '12';
         response.Unit_Priority__c = 1;
-        response.Box_Bag_Number__c = null;
+        //response.Box_Bag_Number__c = null;
         response.Delivery_Service_Type__c = null;
         response.Mobile_Device_Id__c=null;
         response.Extension_Date__c = null;

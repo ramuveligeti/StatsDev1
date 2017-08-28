@@ -11,11 +11,11 @@ public class ResponseUtil {
             }
 
             if(person.Has_Address__c){ 
-                if(person.Box_Bag_Number__c==null){
+                /*if(person.Box_Bag_Number__c==null){
                     resp.Box_Bag_Number__c=null;
                 }else{
                     resp.Box_Bag_Number__c = Decimal.valueOf(person.Box_Bag_Number__c);         
-                }
+                }*/
                 resp.Building_Level_Unit__c = person.Building_Level_Unit__c;
                 resp.Delivery_Building_Name__c = person.Building_Name__c;
                 resp.Country__c = person.Country__c;
